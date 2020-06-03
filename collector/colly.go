@@ -11,7 +11,7 @@ type Collector struct {
 	log  *log.Logger
 }
 
-//NewCollector return new colly
+//NewCollector return new  instance of colly
 func NewColly(colly *colly.Collector, logging *log.Logger) *Collector {
 
 	return &Collector{
@@ -21,11 +21,12 @@ func NewColly(colly *colly.Collector, logging *log.Logger) *Collector {
 
 }
 
-//LoadNews NEWS
+//LoadNews returns related news by an entry
 func (c *Collector) LoadNews() {
 
 	c.collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
+
 		c.log.WithFields(log.Fields{
 			"Text": e.Text,
 			"link": link,
