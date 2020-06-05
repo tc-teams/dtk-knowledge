@@ -1,14 +1,19 @@
 package collector
 
 import (
-	"fmt"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	visited = 10
+)
+
 type Collector struct {
 	collector *colly.Collector
-	log  *log.Logger
+	log       *log.Logger
+	domain    string
+	content   string
 }
 
 //NewCollector return new  instance of colly
@@ -16,7 +21,7 @@ func NewColly(colly *colly.Collector, logging *log.Logger) *Collector {
 
 	return &Collector{
 		collector: colly,
-		log:   logging,
+		log:       logging,
 	}
 
 }
@@ -28,17 +33,23 @@ func (c *Collector) LoadNews() {
 		link := e.Attr("href")
 
 		c.log.WithFields(log.Fields{
-			"Text": e.Text,
-			"link": link,
-		}).Info("Page was found")
+			"Text":  e.Text,
+			"link":  link,
+			"based": "on",
+		}).Info(c.content)
 
 		c.collector.Visit(e.Request.AbsoluteURL(link))
 	})
-
+	countVisited := 0
 	c.collector.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
+
+		if countVisited >= visited {
+			r.Abort()
+		}
+
+		countVisited++
 	})
 
-	c.collector.Visit("https://g1.globo.com/")
+	c.collector.Visit(c.domain)
 
 }
