@@ -1,13 +1,10 @@
 package collector
 
-import "C"
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
 	"strings"
-	"time"
 )
 
 const (
@@ -18,6 +15,11 @@ type Collector struct {
 	Collector *colly.Collector
 	Log       *log.Logger
 	Content   string
+}
+
+type Te struct {
+	Title   string
+	SubTile string
 }
 
 //NewCollector return new  instance of colly
@@ -34,54 +36,41 @@ func NewColly(Colly *colly.Collector, Logging *log.Logger, Content string) *Coll
 //LoadNews returns related news by an entry
 func (c *Collector) SearchAndInputNews() {
 
-	// Callback for when a scraped page contains an article element
-	c.Collector.OnHTML("article", func(e *colly.HTMLElement) {
 
-		// Extract meta tags from the document
-		metaTags := e.DOM.ParentsUntil("~").Find("meta")
-		metaTags.Each(func(_ int, s *goquery.Selection) {
-			// Search for og:type meta tags
-			property, _ := s.Attr("property")
-			if strings.EqualFold(property, "og:type") {
-				content, _ := s.Attr("content")
+	c.Collector.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting", r.URL.String())
+	})
+	c.Collector.OnScraped(func(r *colly.Response) {
+		fmt.Println("Finished", r.Request.URL)
+	})
+	c.Collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		subUrl := e.Request.AbsoluteURL(e.Attr("href"))
+		if strings.Index(subUrl, "covid") > -1 || strings.Index(subUrl, "coronavirus") > -1 ||
+			strings.Index(subUrl, "covid-19") > -1 {
+			c.Collector.Visit(subUrl)
+			fmt.Println("sub url permitida", subUrl)
+		}
+	})
+	c.Collector.OnHTML("head", func(e *colly.HTMLElement) {
 
-				// Emoji pages have "article" as their og:type
-				isEmojiPage := strings.EqualFold(content, "article")
-				fmt.Println(isEmojiPage)
+		teste := Te{}
+		e.ForEach("meta", func(_ int, el *colly.HTMLElement) {
+
+			switch el.Attr("property") {
+			case "og:title":
+				teste.Title = el.Attr("content")
+			case "og:description":
+				teste.SubTile = el.Attr("content")
 			}
 		})
-
-
-	})
-
-	c.Collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-
-
 		c.Log.WithFields(log.Fields{
-			"Text":  e.Text,
-			"link":  link,
-			"based": "on",
+			"Title":    teste.Title,
+			"SubTitle": teste.SubTile,
+			"based":    "on",
 		}).Info(c.Content)
-		c.Collector.Visit(e.Request.AbsoluteURL(link))
-
-	})
-	c.Collector.Limit(&colly.LimitRule{
-		DomainGlob:  "*" ,
-		RandomDelay: 5 * time.Second,
-	})
-
-	countVisited := 0
-	c.Collector.OnRequest(func(r *colly.Request) {
-
-		if countVisited >= visited {
-			r.Abort()
-		}
-
-		countVisited++
 	})
 
 	// Start scraping on....
-	c.Collector.Visit("https://g1.globo.com/")
+	c.Collector.Visit("https://g1.globo.com/busca/?q=covid")
 
 }
