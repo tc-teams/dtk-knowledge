@@ -1,8 +1,9 @@
-# tcc-collector
-This has a link search function on websites and then define the index in elasticsearch to improve data analysis.
+#Fakefinder
+
+```
+É responsavel por buscar informação sobre o covid-19, afim de obter
+difirentes perspectivas com o intuito de comparar o seu grau de similaridade através de um serviço externo.
 
 
-tcc-collector, poderia ser o nome do nosso projeto pois este será de resposavel pela busca e inserção no elastic
-das informações.
 
 

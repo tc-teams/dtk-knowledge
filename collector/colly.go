@@ -2,7 +2,7 @@ package collector
 
 import (
 	"github.com/gocolly/colly/v2"
-	validate "github.com/idasilva/dtk-knowledge/app/news/valid"
+	"github.com/idasilva/dtk-knowledge/app/news/valid"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
@@ -15,15 +15,15 @@ const (
 type Collector struct {
 	Colly     *colly.Collector
 	Log       *log.Logger
-	Valid      validate.Validation
+	Valid     *valid.Validation
 	Content    string
 }
 
 type News struct {
-	Title    string `validate:"required,max=60"`
-	SubTitle string `validate:"required,max=60"`
-	Date     string `validate:"required,max=60"`
-	Page     string `validate:"required,max=60"`
+	Title    string `validate:"required,max=500"`
+	SubTitle string `validate:"required,max=500"`
+	//Date     string `validate:"required,max=500"`
+	Page     string `validate:"required,max=500"`
 }
 
 
@@ -33,7 +33,7 @@ func (c *Collector) SearchAndInputNews() {
 	stop := false
 
 	c.Colly.OnRequest(func(r *colly.Request) {
-		c.Log.WithFields(log.Fields{"Visiting": r.URL.String()}).Info("start search")
+		c.Log.WithFields(log.Fields{"Visiting": r.URL.String()}).Info("int search ")
 	})
 	c.Colly.OnScraped(func(r *colly.Response) {
 		c.Log.WithFields(log.Fields{"Finished": r.Request.URL}).Info("end search")
@@ -66,6 +66,7 @@ func (c *Collector) SearchAndInputNews() {
 		})
 		detailsNews.Page = e.Request.URL.Host
 		_,err := c.Valid.ValidateStruct(detailsNews)
+
 		if err != nil {
 			return
 		}
@@ -88,7 +89,7 @@ func (c *Collector) SearchAndInputNews() {
 }
 
 //NewCollector return new  instance of colly
-func NewColly(Colly *colly.Collector, Log *log.Logger,Valid validate.Validation, Content string) *Collector {
+func NewColly(Colly *colly.Collector, Log *log.Logger,Valid *valid.Validation, Content string) *Collector {
 
 	return &Collector{
 		Colly:     Colly,

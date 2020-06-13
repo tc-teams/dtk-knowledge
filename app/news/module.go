@@ -18,18 +18,17 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 
 	param := mux.Vars(r)
 
-	validation := validate.NewValidate("Validate")
+	validation := validate.NewValidate("validate")
 
 	c := collector.NewColly(colly.NewCollector(
 		colly.AllowedDomains(collector.Folha, collector.G1, collector.Uol),
 		colly.Async(true),
-		colly.AllowURLRevisit(),
-	),
+		),
 		&log.Logger{
 			Out:       os.Stdout,
 			Formatter: &log.JSONFormatter{},
 			Level:     log.DebugLevel,
-		}, validation.Valid, param["content"],
+		}, validation, param["content"],
 	)
 
 	log.WithFields(log.Fields{"Text": param["content"]}).Warn("Search by content input")
