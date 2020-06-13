@@ -16,8 +16,9 @@ import (
 func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 	c := collector.NewColly(colly.NewCollector(
-		//colly.AllowedDomains(collector.Folha,collector.G1,collector.Uol),
-		//colly.Async(true),
+		colly.AllowedDomains(collector.Folha,collector.G1,collector.Uol),
+		colly.Async(true),
+		colly.AllowURLRevisit(),
 	),
 		&log.Logger{
 			Out:       os.Stdout,
