@@ -2,8 +2,10 @@ package collector
 
 import (
 	"github.com/gocolly/colly/v2"
+	validate "github.com/idasilva/dtk-knowledge/app/news/valid"
 	log "github.com/sirupsen/logrus"
 	"strings"
+	"time"
 )
 
 const (
@@ -11,35 +13,46 @@ const (
 )
 
 type Collector struct {
-	Collector *colly.Collector
+	Colly     *colly.Collector
 	Log       *log.Logger
-	Content   string
+	Valid      validate.Validation
+	Content    string
 }
 
 type News struct {
-	Title    string
-	SubTitle string
-	Date     string
+	Title    string `validate:"required,max=60"`
+	SubTitle string `validate:"required,max=60"`
+	Date     string `validate:"required,max=60"`
+	Page     string `validate:"required,max=60"`
 }
+
 
 //LoadNews returns related news by an entry
 func (c *Collector) SearchAndInputNews() {
-	detailCollector := c.Collector.Clone()
+	detailColly := c.Colly.Clone()
+	stop := false
 
-	c.Collector.OnRequest(func(r *colly.Request) {
+	c.Colly.OnRequest(func(r *colly.Request) {
 		c.Log.WithFields(log.Fields{"Visiting": r.URL.String()}).Info("start search")
 	})
-	c.Collector.OnScraped(func(r *colly.Response) {
+	c.Colly.OnScraped(func(r *colly.Response) {
 		c.Log.WithFields(log.Fields{"Finished": r.Request.URL}).Info("end search")
 	})
-	c.Collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
+
+	c.Colly.OnError(func(_ *colly.Response, e error) {
+		stop = true
+		c.Log.WithFields(log.Fields{"Error": e.Error()}).Info("error search")
+
+	})
+
+	c.Colly.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		subUrl := e.Request.AbsoluteURL(e.Attr("href"))
 		if strings.Index(subUrl, "covid") > -1 || strings.Index(subUrl, "coronavirus") > -1 ||
-			strings.Index(subUrl, "covid-19") > -1 {
-			detailCollector.Visit(subUrl)
+			strings.Index(subUrl, "covid-19") > -1 && !stop {
+			detailColly.Visit(subUrl)
 		}
 	})
-	detailCollector.OnHTML("head", func(e *colly.HTMLElement) {
+	detailColly.OnHTML("head", func(e *colly.HTMLElement) {
 
 		detailsNews := News{}
 		e.ForEach("meta", func(_ int, el *colly.HTMLElement) {
@@ -51,25 +64,38 @@ func (c *Collector) SearchAndInputNews() {
 				detailsNews.SubTitle = el.Attr("content")
 			}
 		})
-		c.Log.WithFields(log.Fields{"Title": detailsNews.Title,"SubTitle": detailsNews.SubTitle}).Info(c.Content)
+		detailsNews.Page = e.Request.URL.Host
+		_,err := c.Valid.ValidateStruct(detailsNews)
+		if err != nil {
+			return
+		}
+
+		c.Log.WithFields(log.Fields{
+			"Title":    detailsNews.Title,
+			"SubTitle": detailsNews.SubTitle,
+			"Page":     detailsNews.Page,
+		}).Info(c.Content)
 
 	})
+	c.Colly.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 3, RandomDelay: 5 * time.Second})
 
 	// Start scraping on....
-	c.Collector.Visit(StartFolha)
-	c.Collector.Visit(StartG1)
-	c.Collector.Visit(StartUol)
-	c.Collector.Wait()
+	c.Colly.Visit(StartFolha)
+	c.Colly.Visit(StartG1)
+	c.Colly.Visit(StartUol)
+	c.Colly.Wait()
 
 }
+
 //NewCollector return new  instance of colly
-func NewColly(Colly *colly.Collector, Logging *log.Logger, Content string) *Collector {
+func NewColly(Colly *colly.Collector, Log *log.Logger,Valid validate.Validation, Content string) *Collector {
 
 	return &Collector{
-		Collector: Colly,
-		Log:       Logging,
+		Colly:     Colly,
+		Log:       Log,
+		Valid:     Valid,
 		Content:   Content,
+
 	}
 
 }
-

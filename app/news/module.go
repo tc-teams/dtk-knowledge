@@ -3,7 +3,8 @@ package news
 import (
 	"github.com/gocolly/colly/v2"
 	"github.com/gorilla/mux"
-	collector "github.com/idasilva/dtk-knowledge/collector"
+	validate "github.com/idasilva/dtk-knowledge/app/news/valid"
+	"github.com/idasilva/dtk-knowledge/collector"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -14,9 +15,13 @@ import (
 
 //HandlerFakeFinder instance a new collector of news
 func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
+
 	param := mux.Vars(r)
+
+	validation := validate.NewValidate("Validate")
+
 	c := collector.NewColly(colly.NewCollector(
-		colly.AllowedDomains(collector.Folha,collector.G1,collector.Uol),
+		colly.AllowedDomains(collector.Folha, collector.G1, collector.Uol),
 		colly.Async(true),
 		colly.AllowURLRevisit(),
 	),
@@ -24,11 +29,10 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 			Out:       os.Stdout,
 			Formatter: &log.JSONFormatter{},
 			Level:     log.DebugLevel,
-		}, param["content"])
+		}, validation.Valid, param["content"],
+	)
 
-	log.WithFields(log.Fields{
-		"Text":  param["content"],
-	}).Warn("Search by content input")
+	log.WithFields(log.Fields{"Text": param["content"]}).Warn("Search by content input")
 
 	c.SearchAndInputNews()
 
