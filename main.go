@@ -10,6 +10,6 @@ import (
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/{content}",news.HandlerFakeFinder)
-	fmt.Println("Serve on at port:8080")
+	fmt.Println("Serve on at port:8000")
 	http.ListenAndServe(":8000",router)
 }

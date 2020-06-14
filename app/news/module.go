@@ -1,6 +1,7 @@
 package news
 
 import (
+	"fmt"
 	"github.com/gocolly/colly/v2"
 	"github.com/gorilla/mux"
 	validate "github.com/idasilva/dtk-knowledge/app/news/valid"
@@ -34,6 +35,7 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 	log.WithFields(log.Fields{"Text": param["content"]}).Warn("Search by content input")
 
 	c.SearchAndInputNews()
+	fmt.Println("cabooooooooooooooooooo")
 
 	w.WriteHeader(http.StatusOK)
 

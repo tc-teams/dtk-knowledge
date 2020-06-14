@@ -13,19 +13,18 @@ const (
 )
 
 type Collector struct {
-	Colly     *colly.Collector
-	Log       *log.Logger
-	Valid     *valid.Validation
-	Content    string
+	Colly   *colly.Collector
+	Log     *log.Logger
+	Valid   *valid.Validation
+	Content string
 }
 
 type News struct {
 	Title    string `validate:"required,max=500"`
 	SubTitle string `validate:"required,max=500"`
 	//Date     string `validate:"required,max=500"`
-	Page     string `validate:"required,max=500"`
+	Page string `validate:"required,max=500"`
 }
-
 
 //LoadNews returns related news by an entry
 func (c *Collector) SearchAndInputNews() {
@@ -47,8 +46,8 @@ func (c *Collector) SearchAndInputNews() {
 
 	c.Colly.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		subUrl := e.Request.AbsoluteURL(e.Attr("href"))
-		if strings.Index(subUrl, "covid") > -1 || strings.Index(subUrl, "coronavirus") > -1 ||
-			strings.Index(subUrl, "covid-19") > -1 && !stop {
+		if strings.Index(subUrl, "Covid") > -1 || strings.Index(subUrl, "coronavírus") > -1 ||
+			strings.Index(subUrl, "Covid-19") > -1 || strings.Index(subUrl, "pandemia") > -1 || strings.Index(subUrl, "quarentena") > -1 && !stop {
 			detailColly.Visit(subUrl)
 		}
 	})
@@ -65,9 +64,13 @@ func (c *Collector) SearchAndInputNews() {
 			}
 		})
 		detailsNews.Page = e.Request.URL.Host
-		_,err := c.Valid.ValidateStruct(detailsNews)
+		_, err := c.Valid.ValidateStruct(detailsNews)
 
 		if err != nil {
+			c.Log.WithFields(log.Fields{
+				"ErrorID": err,
+			}).Info(c.Content)
+
 			return
 		}
 
@@ -84,19 +87,17 @@ func (c *Collector) SearchAndInputNews() {
 	c.Colly.Visit(StartFolha)
 	c.Colly.Visit(StartG1)
 	c.Colly.Visit(StartUol)
-	c.Colly.Wait()
 
 }
 
 //NewCollector return new  instance of colly
-func NewColly(Colly *colly.Collector, Log *log.Logger,Valid *valid.Validation, Content string) *Collector {
+func NewColly(Colly *colly.Collector, Log *log.Logger, Valid *valid.Validation, Content string) *Collector {
 
 	return &Collector{
-		Colly:     Colly,
-		Log:       Log,
-		Valid:     Valid,
-		Content:   Content,
-
+		Colly:   Colly,
+		Log:     Log,
+		Valid:   Valid,
+		Content: Content,
 	}
 
 }
