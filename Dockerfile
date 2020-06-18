@@ -7,7 +7,7 @@ ADD . /build/
 WORKDIR /build
 
 RUN go get github.com/gorilla/mux \
-&& go build -o  main .
+    && go build -o  main .
 
 FROM alpine
 
