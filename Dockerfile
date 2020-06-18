@@ -1,4 +1,4 @@
-FROM golang:1.13 as builder
+FROM golang:latest as builder
 
 RUN mkdir /build
 
@@ -6,7 +6,8 @@ ADD . /build/
 
 WORKDIR /build
 
-RUN go get github.com/gorilla/mux && go build -o  main .
+RUN go get github.com/gorilla/mux \
+&& go build -o  main .
 
 FROM alpine
 

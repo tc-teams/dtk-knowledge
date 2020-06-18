@@ -2,7 +2,7 @@ package collector
 
 import (
 	"github.com/gocolly/colly"
-	"github.com/idasilva/fakefinder-crawler/appae/news/valid"
+	"github.com/tc-teams/fakefinder-crawler/app/news/valid"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"

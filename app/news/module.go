@@ -3,8 +3,8 @@ package news
 import (
 	"github.com/gocolly/colly"
 	"github.com/gorilla/mux"
-	"github.com/idasilva/fakefinder-crawler/appae/news/valid"
-	"github.com/idasilva/fakefinder-crawler/collector"
+	"github.com/tc-teams/fakefinder-crawler/app/news/valid"
+	"github.com/tc-teams/fakefinder-crawler/collector"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"

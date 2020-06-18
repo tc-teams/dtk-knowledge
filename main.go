@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/idasilva/fakefinder-crawler/appae/news"
+	"github.com/tc-teams/fakefinder-crawler/app/news"
 	"net/http"
 )
 

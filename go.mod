@@ -1,4 +1,4 @@
-module github.com/idasilva/fakefinder-crawler
+module github.com/tc-teams/fakefinder-crawler
 
 go 1.13
 
