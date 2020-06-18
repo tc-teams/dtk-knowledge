@@ -6,7 +6,7 @@ ADD . /build/
 
 WORKDIR /build
 
-RUN go get github.com/gorilla/mux && go build -o main .
+RUN go get github.com/gorilla/mux && go build -o  main .
 
 FROM alpine
 
@@ -18,6 +18,6 @@ COPY --from=builder /build/main /app/
 
 WORKDIR /app
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["./main"]

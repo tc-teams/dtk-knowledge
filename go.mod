@@ -1,4 +1,4 @@
-module github.com/idasilva/dtk-knowledge
+module github.com/idasilva/fakefinder-crawler
 
 go 1.13
 

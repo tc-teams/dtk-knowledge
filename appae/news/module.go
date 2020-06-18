@@ -3,6 +3,7 @@ package news
 import (
 	"github.com/gocolly/colly"
 	"github.com/gorilla/mux"
+	"github.com/idasilva/fakefinder-crawler/appae/news/valid"
 	"github.com/idasilva/fakefinder-crawler/collector"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -17,7 +18,7 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 
 	param := mux.Vars(r)
 
-	validation := validate.NewValidate("validate")
+	validation := valid.NewValidate("validate")
 
 	c := collector.NewColly(colly.NewCollector(
 		colly.AllowedDomains(collector.Folha, collector.G1, collector.Uol),
