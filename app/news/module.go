@@ -1,11 +1,9 @@
 package news
 
 import (
-	"fmt"
-	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly"
 	"github.com/gorilla/mux"
-	validate "github.com/idasilva/dtk-knowledge/app/news/valid"
-	"github.com/idasilva/dtk-knowledge/collector"
+	"github.com/idasilva/fakefinder-crawler/collector"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -14,7 +12,7 @@ import (
 //Limiting Colly to parse only links that are on the clienturl.com domain
 //Turning on Async processing of links (this is where we get a HUGE speed increase as we'll talk about in a bit)
 
-//HandlerFakeFinder instance a new collector of news
+//HandlerFakeFinder rs
 func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 
 	param := mux.Vars(r)
@@ -23,6 +21,7 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 
 	c := collector.NewColly(colly.NewCollector(
 		colly.AllowedDomains(collector.Folha, collector.G1, collector.Uol),
+		colly.MaxDepth(3),
 		colly.Async(true),
 		),
 		&log.Logger{
@@ -35,7 +34,6 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 	log.WithFields(log.Fields{"Text": param["content"]}).Warn("Search by content input")
 
 	c.SearchAndInputNews()
-	fmt.Println("cabooooooooooooooooooo")
 
 	w.WriteHeader(http.StatusOK)
 

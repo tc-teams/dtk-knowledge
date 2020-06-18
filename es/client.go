@@ -19,7 +19,7 @@ type Hit struct {
 	Date time.Time
 }
 
-//NewClient return a new instance client
+//NewClient return a news instance client
 func NewClient (url string) (*Elastic,error){
 
 	client, err := elastic.NewClient(elastic.SetURL(url))

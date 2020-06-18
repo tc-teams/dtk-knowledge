@@ -10,7 +10,7 @@ type Validation struct {
 	Valid *validator.Validate
 }
 
-//NewValidate returns a new valid of structs
+//NewValidate returns a news valid of structs
 func NewValidate(Name string) *Validation{
 	config := &validator.Config{
 		TagName: Name,}

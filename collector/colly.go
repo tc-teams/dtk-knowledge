@@ -1,15 +1,11 @@
 package collector
 
 import (
-	"github.com/gocolly/colly/v2"
-	"github.com/idasilva/dtk-knowledge/app/news/valid"
+	"github.com/gocolly/colly"
+	"github.com/idasilva/fakefinder-crawler/app/news/valid"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
-)
-
-const (
-	visited = 10
 )
 
 type Collector struct {
@@ -19,12 +15,6 @@ type Collector struct {
 	Content string
 }
 
-type News struct {
-	Title    string `validate:"required,max=500"`
-	SubTitle string `validate:"required,max=500"`
-	//Date     string `validate:"required,max=500"`
-	Page string `validate:"required,max=500"`
-}
 
 //LoadNews returns related news by an entry
 func (c *Collector) SearchAndInputNews() {
@@ -48,7 +38,7 @@ func (c *Collector) SearchAndInputNews() {
 		subUrl := e.Request.AbsoluteURL(e.Attr("href"))
 		if strings.Index(subUrl, "Covid") > -1 || strings.Index(subUrl, "coronavírus") > -1 ||
 			strings.Index(subUrl, "Covid-19") > -1 || strings.Index(subUrl, "pandemia") > -1 || strings.Index(subUrl, "quarentena") > -1 && !stop {
-			detailColly.Visit(subUrl)
+				detailColly.Visit(subUrl)
 		}
 	})
 	detailColly.OnHTML("head", func(e *colly.HTMLElement) {
@@ -56,7 +46,6 @@ func (c *Collector) SearchAndInputNews() {
 		detailsNews := News{}
 		e.ForEach("meta", func(_ int, el *colly.HTMLElement) {
 			switch el.Attr("property") {
-
 			case "og:title":
 				detailsNews.Title = el.Attr("content")
 			case "og:description":
@@ -81,16 +70,18 @@ func (c *Collector) SearchAndInputNews() {
 		}).Info(c.Content)
 
 	})
-	c.Colly.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 3, RandomDelay: 5 * time.Second})
+	c.Colly.Limit(&colly.LimitRule{Parallelism: 3, RandomDelay: 1 * time.Second})
 
 	// Start scraping on....
 	c.Colly.Visit(StartFolha)
 	c.Colly.Visit(StartG1)
 	c.Colly.Visit(StartUol)
+	c.Colly.Wait()
+
 
 }
 
-//NewCollector return new  instance of colly
+//NewCollector return news  instance of colly
 func NewColly(Colly *colly.Collector, Log *log.Logger, Valid *valid.Validation, Content string) *Collector {
 
 	return &Collector{
