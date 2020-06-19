@@ -11,15 +11,14 @@ type Validation struct {
 }
 
 //NewValidate returns a news valid of structs
-func NewValidate(Name string) *Validation{
+func NewValidate(Name string) *Validation {
 	config := &validator.Config{
-		TagName: Name,}
+		TagName: Name}
 
 	return &Validation{
 		Valid: validator.New(config)}
 
 }
-
 
 func (v Validation) ValidateStruct(generic interface{}) (bool, error) {
 	err := v.Valid.Struct(generic)
