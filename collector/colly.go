@@ -2,8 +2,8 @@ package collector
 
 import (
 	"github.com/gocolly/colly"
-	"github.com/tc-teams/fakefinder-crawler/app/news/valid"
 	log "github.com/sirupsen/logrus"
+	"github.com/tc-teams/fakefinder-crawler/app/news/valid"
 	"strings"
 	"time"
 )
@@ -14,7 +14,6 @@ type Collector struct {
 	Valid   *valid.Validation
 	Content string
 }
-
 
 //LoadNews returns related news by an entry
 func (c *Collector) SearchAndInputNews() {
@@ -38,7 +37,7 @@ func (c *Collector) SearchAndInputNews() {
 		subUrl := e.Request.AbsoluteURL(e.Attr("href"))
 		if strings.Index(subUrl, "Covid") > -1 || strings.Index(subUrl, "coronavírus") > -1 ||
 			strings.Index(subUrl, "Covid-19") > -1 || strings.Index(subUrl, "pandemia") > -1 || strings.Index(subUrl, "quarentena") > -1 && !stop {
-				detailColly.Visit(subUrl)
+			detailColly.Visit(subUrl)
 		}
 	})
 	detailColly.OnHTML("head", func(e *colly.HTMLElement) {
@@ -77,7 +76,6 @@ func (c *Collector) SearchAndInputNews() {
 	c.Colly.Visit(StartG1)
 	c.Colly.Visit(StartUol)
 	c.Colly.Wait()
-
 
 }
 

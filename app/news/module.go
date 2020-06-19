@@ -3,9 +3,9 @@ package news
 import (
 	"github.com/gocolly/colly"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/app/news/valid"
 	"github.com/tc-teams/fakefinder-crawler/collector"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -24,7 +24,7 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 		colly.AllowedDomains(collector.Folha, collector.G1, collector.Uol),
 		colly.MaxDepth(3),
 		colly.Async(true),
-		),
+	),
 		&log.Logger{
 			Out:       os.Stdout,
 			Formatter: &log.JSONFormatter{},
