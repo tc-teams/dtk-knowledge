@@ -21,13 +21,13 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |
-        sudo docker build --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} -f .
+        sudo docker build --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} -f Dockerfile .
 
 
       #Push the Docker image to Google Container Registry
     - name: Publish
       run: |
-       sudo docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} -f
+       sudo docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} -f Dockerfile .
 
       # Deploy the Docker image to the GKE cluster
     - name: Deploy
