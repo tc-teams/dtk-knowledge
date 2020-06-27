@@ -1,0 +1,39 @@
+name: Deploy the application to Google Cloud Run
+on:
+ push:
+   branches: [ master ]
+jobs:
+ setup-build-publish-deploy:
+   name: Setup, Build, Publish, and Deploy
+   runs-on: ubuntu-latest
+   steps:
+   # Setup gcloud CLI
+   - uses: GoogleCloudPlatform/github-actions@0.1.2
+     with:
+       service_account_key: ${{ secrets.GCLOUD_AUTH }}
+       run: |
+         echo Hello there!
+   # Configure docker to use the gcloud command-line tool as a credential helper
+   - name: Setup
+     run: |
+      sudo  gcloud auth configure-docker
+
+   # Build the Docker image
+   - name: Build
+     run: |
+       sudo docker build . --file ./Dockerfile --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:4.0
+
+     #Push the Docker image to Google Container Registry
+   - name: Publish
+     run: |
+      sudo docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} .
+
+     # Deploy the Docker image to the GKE cluster
+   - name: Deploy
+     run: |
+       sudo gcloud components install beta && gcloud beta run deploy ${{ secrets.GCLOUD_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region us-central1-a   --platform managed
+
+
+
+
+
