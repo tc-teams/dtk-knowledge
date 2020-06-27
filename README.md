@@ -1,11 +1,20 @@
-#Fakefinder
+# Fakefinder
 
+## Installation
+
+```bash
 
 ```
-É responsavel por buscar informação sobre o covid-19, afim de obter
-difirentes perspectivas com o intuito de comparar o seu grau de similaridade através de um serviço externo
+
+## Usage
+
+```go
+
 ```
 
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+Please make sure to update tests as appropriate.
 
-
+## License
