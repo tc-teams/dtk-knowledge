@@ -21,7 +21,7 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |
-        docker build -t gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:4.0
+        docker build . --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:4.0
 
 
       #Push the Docker image to Google Container Registry
