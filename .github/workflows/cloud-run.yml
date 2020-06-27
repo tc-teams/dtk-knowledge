@@ -1,9 +1,7 @@
 name: Deploy the application to Google Cloud Run
 on:
   push:
-    branches:
-      - 'master'
-
+    branches: [ master ]
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
@@ -41,3 +39,4 @@ jobs:
       - name: Deploy
         run: |-
           gcloud components install beta && gcloud beta run deploy ${{ secrets.GCLOUD_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region europe-west1 --platform managed
+
