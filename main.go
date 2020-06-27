@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	router := mux.NewRouter().StrictSlash(true)
+	router := mux.NewRouter()
 	router.HandleFunc("/{content}", news.HandlerFakeFinder)
 	http.ListenAndServe(":8080", router)
 }

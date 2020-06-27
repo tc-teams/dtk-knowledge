@@ -66,7 +66,7 @@ func (c *Collector) SearchAndInputNews() {
 			"Title":    detailsNews.Title,
 			"SubTitle": detailsNews.SubTitle,
 			"Page":     detailsNews.Page,
-		}).Info(c.Content)
+		}).Warn(c.Content)
 
 	})
 	c.Colly.Limit(&colly.LimitRule{Parallelism: 3, RandomDelay: 1 * time.Second})

@@ -1,11 +1,11 @@
 **1. O que esse PR faz? Por que precisamos dele?**
-<!-- Este item é obrigatório -->
+<!-- Este item ? obrigat?rio -->
 
-**2. Qual(is) task(s) do Trello está(ão) relacionada(s)?**
-<!-- Este item é obrigatório -->
+**2. Qual(is) task(s) do Trello est?(?o) relacionada(s)?**
+<!-- Este item ? obrigat?rio -->
 
-**3. Como verificar a implementação?**
-<!-- Este item é obrigatório -->
+**3. Como verificar a implementa??o?**
+<!-- Este item ? obrigat?rio -->
 
-**4. Informações adicionais para os revisores.**
-<!-- Este item é opcional -->
+**4. Informa??es adicionais para os revisores.**
+<!-- Este item ? opcional -->

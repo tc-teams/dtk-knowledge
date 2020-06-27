@@ -20,6 +20,7 @@ func NewValidate(Name string) *Validation {
 
 }
 
+//ValidateStruct V
 func (v Validation) ValidateStruct(generic interface{}) (bool, error) {
 	err := v.Valid.Struct(generic)
 	if err != nil {

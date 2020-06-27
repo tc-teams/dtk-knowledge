@@ -27,8 +27,8 @@ func HandlerFakeFinder(w http.ResponseWriter, r *http.Request) {
 	),
 		&log.Logger{
 			Out:       os.Stdout,
-			Formatter: &log.JSONFormatter{},
-			Level:     log.DebugLevel,
+			Formatter: &log.JSONFormatter{
+			},
 		}, validation, param["content"],
 	)
 
