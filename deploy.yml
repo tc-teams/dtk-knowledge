@@ -7,9 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    # Setup gcloud CLI
-    - name: Setup gcloud environment
     - uses: GoogleCloudPlatform/github-actions@0.1.2
       with:
         service_account_key: ${{ secrets.GCLOUD_AUTH }}
