@@ -15,6 +15,11 @@ jobs:
        service_account_key: ${{ secrets.GCLOUD_AUTH }}
        run: |
          echo Hello there!
+   # Configure docker to use the gcloud command-line tool as a credential helper
+   - name: Setup
+     run: |
+       gcloud auth configure-docker
+
    # Build the Docker image
    - name: Build
      run: |
@@ -23,13 +28,12 @@ jobs:
      #Push the Docker image to Google Container Registry
    - name: Publish
      run: |
-        sudo  gcloud auth configure-docker
         docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:5.0
 
      # Deploy the Docker image to the GKE cluster
    - name: Deploy
      run: |
-       sudo gcloud components install beta && gcloud beta run deploy ${{ secrets.GCLOUD_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region us-central1-a   --platform managed
+       gcloud components install beta && gcloud beta run deploy ${{ secrets.GCLOUD_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region us-central1-a   --platform managed
 
 
 
