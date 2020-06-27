@@ -16,18 +16,18 @@ jobs:
     # Configure docker to use the gcloud command-line tool as a credential helper
     - name: Setup
       run: |
-        gcloud auth configure-docker
+       auso  gcloud auth configure-docker -y
 
     # Build the Docker image
     - name: Build
       run: |
-        sudo docker build --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:${cat VERSION} -f .
+        sudo docker build --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} -f .
 
 
       #Push the Docker image to Google Container Registry
     - name: Publish
       run: |
-       sudo docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:${cat VERSION} -f
+       sudo docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} -f
 
       # Deploy the Docker image to the GKE cluster
     - name: Deploy
