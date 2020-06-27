@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      uses: GoogleCloudPlatform/github-actions@0.1.2
+    - uses: GoogleCloudPlatform/github-actions@0.1.2
       with:
         service_account_key: ${{ secrets.GCLOUD_AUTH }}
