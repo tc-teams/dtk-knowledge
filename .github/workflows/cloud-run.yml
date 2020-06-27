@@ -7,12 +7,8 @@ jobs:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
-
       # Setup gcloud CLI
-      - name: Setup gcloud environment
-        uses: GoogleCloudPlatform/github-actions@0.1.2
+      - uses: GoogleCloudPlatform/github-actions@0.1.2
         with:
           version: '270.0.0'
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
