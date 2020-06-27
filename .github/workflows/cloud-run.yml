@@ -21,18 +21,18 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |
-        docker build  --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:4.0 .
+        sudo docker build --tag gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:${cat VERSION} -f .
 
 
       #Push the Docker image to Google Container Registry
     - name: Publish
       run: |
-        docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:4.0
+       sudo docker push gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }}:${cat VERSION} -f
 
       # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |
-        gcloud components install beta && gcloud beta run deploy ${{ secrets.GCLOUD_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region us-central1-a   --platform managed
+        sudo gcloud components install beta && gcloud beta run deploy ${{ secrets.GCLOUD_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region us-central1-a   --platform managed
 
 
 
