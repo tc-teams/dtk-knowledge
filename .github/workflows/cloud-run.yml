@@ -16,7 +16,7 @@ jobs:
     # Configure docker to use the gcloud command-line tool as a credential helper
     - name: Setup
       run: |
-       auso  gcloud auth configure-docker -y
+       sudo  gcloud auth configure-docker -y
 
     # Build the Docker image
     - name: Build
