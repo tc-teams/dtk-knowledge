@@ -11,6 +11,8 @@ jobs:
     - uses: GoogleCloudPlatform/github-actions@0.1.2
       with:
         service_account_key: ${{ secrets.GCLOUD_AUTH }}
+      run: |
+        echo Hello there!
 
       # Configure docker to use the gcloud command-line tool as a credential helper
     - name: Setup
