@@ -1,9 +1,9 @@
-package collector
+package tracker
 
 import (
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
-	"github.com/tc-teams/fakefinder-crawler/app/news/valid"
+	"gopkg.in/go-playground/validator.v8"
 	"strings"
 	"time"
 )
@@ -11,11 +11,11 @@ import (
 type Collector struct {
 	Colly   *colly.Collector
 	Log     *log.Logger
-	Valid   *valid.Validation
+	Validator  *validator.Validate
 	Content string
 }
 
-//LoadNews returns related news by an entry
+//LoadNews returns related crawler by an entry
 func (c *Collector) SearchAndInputNews() {
 	detailColly := c.Colly.Clone()
 	stop := false
@@ -52,15 +52,15 @@ func (c *Collector) SearchAndInputNews() {
 			}
 		})
 		detailsNews.Page = e.Request.URL.Host
-		_, err := c.Valid.ValidateStruct(detailsNews)
-
-		if err != nil {
-			c.Log.WithFields(log.Fields{
-				"ErrorID": err,
-			}).Info(c.Content)
-
-			return
-		}
+		//_, err := c.Validator.ValidateStruct(detailsNews)
+		//
+		//if err != nil {
+		//	c.Log.WithFields(log.Fields{
+		//		"ErrorID": err,
+		//	}).Info(c.Content)
+		//
+		//	return
+		//}
 
 		c.Log.WithFields(log.Fields{
 			"Title":    detailsNews.Title,
@@ -79,13 +79,13 @@ func (c *Collector) SearchAndInputNews() {
 
 }
 
-//NewCollector return news  instance of colly
-func NewColly(Colly *colly.Collector, Log *log.Logger, Valid *valid.Validation, Content string) *Collector {
+//NewCollector return crawler  instance of colly
+func NewColly(Colly *colly.Collector, Log *log.Logger, Validator *validator.Validate, Content string) *Collector {
 
 	return &Collector{
 		Colly:   Colly,
 		Log:     Log,
-		Valid:   Valid,
+		Validator:   Validator,
 		Content: Content,
 	}
 

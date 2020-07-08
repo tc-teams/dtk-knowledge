@@ -18,7 +18,7 @@ type Hit struct {
 	Date time.Time
 }
 
-//NewClient return a news instance client
+//NewClient return a crawler instance client
 func NewClient(url string) (*Elastic, error) {
 
 	client, err := elastic.NewClient(elastic.SetURL(url))

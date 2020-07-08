@@ -1,28 +1,30 @@
-package valid
+package api
 
 import (
 	"errors"
 	"gopkg.in/go-playground/validator.v8"
 )
 
+const validation  =  "validator"
+
 //Validate is a struct
 type Validation struct {
-	Valid *validator.Validate
+	Validate *validator.Validate
 }
 
-//NewValidate returns a news valid of structs
-func NewValidate(Name string) *Validation {
+//NewValidate returns a crawler valid of structs
+func NewValidate() *Validation {
 	config := &validator.Config{
-		TagName: Name}
+		TagName:validation}
 
 	return &Validation{
-		Valid: validator.New(config)}
+		Validate: validator.New(config)}
 
 }
 
 //ValidateStruct V
 func (v Validation) ValidateStruct(generic interface{}) (bool, error) {
-	err := v.Valid.Struct(generic)
+	err := v.Validate.Struct(generic)
 	if err != nil {
 		return true, errors.New(err.Error())
 

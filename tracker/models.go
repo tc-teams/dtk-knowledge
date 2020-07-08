@@ -1,4 +1,4 @@
-package collector
+package tracker
 
 const (
 	G1         = "g1.globo.com"
