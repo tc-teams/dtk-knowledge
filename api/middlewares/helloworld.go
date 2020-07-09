@@ -9,11 +9,12 @@ import (
 
 //HelloWord is the first middlewares for api
 func HelloWord() api.MiddlewareFunc {
-	return func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Println("This request was sent at",time.Now())
-			h.ServeHTTP(w, r)
-		})
+	return func(h api.Handler) api.Handler {
+		return func(w http.ResponseWriter, r *http.Request) error {
+			log.Println("This request was sent at", time.Now())
+		    return 	h(w, r)
+
+		}
 	}
 }
 

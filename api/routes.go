@@ -17,7 +17,7 @@ func (c *Route) AddRoute(r *ContextRoute) {
 // InitModule initializes a module
 func (a *API) InitRoute(r *Route) {
 	r.Route.api = a
-	r.Route.muxRoute = a.Router.Handle(r.Route.Path, r.Route).Methods(r.Route.Method)
+	r.Route.mux = a.Router.Handle(r.Route.Path, r.Route).Methods(r.Route.Method)
 
 
 }

@@ -18,12 +18,13 @@ type API struct {
 	Router     *mux.Router // Responsavel por guarda as rotas
 	Routes      Route
 	Middleware *Middleware
-	validator  *validator.Validate
+	Validator  *validator.Validate
+	context     context.Context
 }
 
 func(a *API) Serve() error{
 	fmt.Println("port",a.Client.Addr)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(a.context)
 
 	go func() {
 		ch := make(chan os.Signal, 1)
@@ -49,6 +50,7 @@ func(a *API) Serve() error{
 func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler = a.Router
 	h.ServeHTTP(w, r)
+
 }
 // NewContextApi returns a new instance API
 func NewContextApi() *API {
@@ -56,6 +58,7 @@ func NewContextApi() *API {
 		Client:     server.NewClient(),
 		Middleware: newMiddlewareContext(),
 		Router:     mux.NewRouter().StrictSlash(true),
-		validator:  NewValidate().Validate,
+		Validator:  NewValidate().Validate,
+		context:    context.Background(),
 	}
 }

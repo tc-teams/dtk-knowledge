@@ -2,12 +2,10 @@ package api
 
 import (
 	"fmt"
-	"net/http"
 )
 
 //Middleware define a function thats takes   in a http.Handler  and return a http.Handler
-type MiddlewareFunc func(http.Handler) http.Handler
-
+type MiddlewareFunc func(Handler) Handler
 //MiddlewareContext for api
 type Middleware struct {
 	context []MiddlewareFunc
@@ -18,7 +16,7 @@ func(m *Middleware) Chain(mwa ...MiddlewareFunc){
 }
 
 //Hello add a new middleware
-func (m *Middleware) ChainMiddleware(h http.Handler) http.Handler {
+func (m *Middleware) ChainMiddleware(h Handler) Handler {
 	// if our chain is done, use the original handlerfunc
 	if len(m.context) == 0 {
 		return h

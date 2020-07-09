@@ -18,7 +18,7 @@ func(s *Client) Serve(c context.Context, handler http.Handler){
 }
 
 //NewClient return a new instance of client
-func NewClient()*Client{
+func NewClient() *Client{
 	return &Client{
 		Server: &http.Server{
 			Addr:           ":8000",

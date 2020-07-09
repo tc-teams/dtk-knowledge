@@ -3,9 +3,9 @@ package crawler
 import (
 	"fmt"
 	"github.com/gocolly/colly"
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
+	h "github.com/tc-teams/fakefinder-crawler/app/hack"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
 	"os"
@@ -18,7 +18,7 @@ func Init() *api.Route {
 	r := &api.Route{}
 	r.RouteName(routerName)
 	r.AddRoute(&api.ContextRoute{
-		Method:  http.MethodPost,
+		Method:  http.MethodGet,
 		Path:    "/covid",
 		Handler: NewsRelatedToCovid,
 	})
@@ -27,12 +27,25 @@ func Init() *api.Route {
 	return r
 }
 
+func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) error {
+	hack := h.NewHack()
+	c := Covid{}
 
-func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) {
+	if err := hack.ParseBody(c, r); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return err
+	}
+	err := HandlerCovid(c)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return err
+	}
+	w.WriteHeader(http.StatusOK)
+	return nil
 
-	param := mux.Vars(r)
+}
 
-	//validation := api.NewValidate()
+func HandlerCovid(cd Covid) error {
 
 	c := tracker.NewColly(colly.NewCollector(
 		colly.AllowedDomains(tracker.Folha, tracker.G1, tracker.Uol),
@@ -42,13 +55,13 @@ func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) {
 		&logrus.Logger{
 			Out:       os.Stdout,
 			Formatter: &logrus.JSONFormatter{},
-		}, nil, param["content"],
+		}, nil, "",
 	)
 
-	logrus.WithFields(logrus.Fields{"Text": param["content"]}).Warn("Search by content input")
+	logrus.WithFields(logrus.Fields{"Text": "hello world"}).Warn("Search by content input")
 
 	c.SearchAndInputNews()
 
-	w.WriteHeader(http.StatusOK)
+	return nil
 
 }

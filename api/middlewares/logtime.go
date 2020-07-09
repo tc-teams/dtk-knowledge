@@ -8,11 +8,11 @@ import (
 )
 
 func LogTime() api.MiddlewareFunc {
-	return func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return func(h api.Handler) api.Handler {
+		return func(w http.ResponseWriter, r *http.Request) error{
 			log.Println("This request was sent at",time.Now())
-			h.ServeHTTP(w, r)
-		})
+			return h(w, r)
+		}
 	}
 }
 
