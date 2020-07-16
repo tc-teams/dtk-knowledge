@@ -2,12 +2,11 @@ package api
 
 import (
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 )
 
 
-type Handler func(w http.ResponseWriter, r *http.Request) error
+type Handler func(w http.ResponseWriter, r *http.Request)  *BaseError
 
 type ContextRoute struct {
 	api      *API   //router
@@ -22,20 +21,17 @@ type ContextRoute struct {
 //so long as it satisfies the http.Handler interface.
 //In lay terms, that simply means it must have a
 //ServeHTTP method with the following signature:
-func (c ContextRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c.ServeContentType(w)
+func (c ContextRoute) ServeHTTP(w http.ResponseWriter, r *http.Request){
+	c.WContentType(w)
 
 	err := c.api.Middleware.ChainMiddleware(c.Handler)(w,r)
 	if err != nil {
-		log.Print("ola mundo")
+		http.Error(w, err.Message,err.Code)
 	}
-	log.Print(c.Path)
-	log.Print(c.Method)
-
 
 }
-func (c *ContextRoute) ServeContentType(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json ;charset=UTF-8")
+func (c *ContextRoute) WContentType(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
 }
 
 

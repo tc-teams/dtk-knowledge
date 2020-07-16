@@ -9,7 +9,7 @@ import (
 
 func LogTime() api.MiddlewareFunc {
 	return func(h api.Handler) api.Handler {
-		return func(w http.ResponseWriter, r *http.Request) error{
+		return func(w http.ResponseWriter, r *http.Request) *api.BaseError{
 			log.Println("This request was sent at",time.Now())
 			return h(w, r)
 		}

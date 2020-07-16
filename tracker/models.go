@@ -9,8 +9,8 @@ const (
 	StartUol   = "https://noticias.uol.com.br/coronavirus/"
 )
 
-//News is used to describe article model.
-type News struct {
+//RelatedNews is used to describe article model.
+type RelatedNews struct {
 	Title    string `validate:"required,max=500"`
 	SubTitle string `validate:"required,max=500"`
 	//Date     string `validate:"required,max=500"`

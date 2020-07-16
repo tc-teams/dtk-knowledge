@@ -7,7 +7,11 @@
 go build .
 go run main.go server 
 ```
+### Teste
+```
+curl -H "Content-Type: application/json" -d '{"name":"covid","url":"www.globo.com"}' http://localhost:8000/covid
 
+```
 ### Tamplete Application 
 ![Tamplete](https://drstearns.github.io/tutorials/gomiddleware/img/flow.png)
 

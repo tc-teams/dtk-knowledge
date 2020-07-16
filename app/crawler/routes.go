@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	h "github.com/tc-teams/fakefinder-crawler/app/hack"
+	"github.com/tc-teams/fakefinder-crawler/external"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
 	"os"
@@ -18,49 +19,79 @@ func Init() *api.Route {
 	r := &api.Route{}
 	r.RouteName(routerName)
 	r.AddRoute(&api.ContextRoute{
-		Method:  http.MethodGet,
+		Method:  http.MethodPost,
 		Path:    "/covid",
 		Handler: NewsRelatedToCovid,
 	})
-	fmt.Printf("adicionando a rota %v\n", r)
 
 	return r
 }
 
-func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) error {
+func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
 	hack := h.NewHack()
-	c := Covid{}
+	var c DocumentNews
 
-	if err := hack.ParseBody(c, r); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return err
+	if err := hack.ParseBody(&c, r); err != nil {
+		return &api.BaseError{
+			Error:   err,
+			Message: "Invalid request body",
+			Code:    http.StatusBadRequest,
+		}
 	}
+
 	err := HandlerCovid(c)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return err
+		return &api.BaseError{
+			Error:   err,
+			Message: "The process could not be completed, pages was not found",
+			Code:    http.StatusNotFound,
+		}
 	}
-	w.WriteHeader(http.StatusOK)
-	return nil
+	return &api.BaseError{
+		Error:   nil,
+		Message: "OK",
+		Code:    http.StatusOK,
+	}
 
 }
 
-func HandlerCovid(cd Covid) error {
+func HandlerCovid(d DocumentNews) error {
 
-	c := tracker.NewColly(colly.NewCollector(
-		colly.AllowedDomains(tracker.Folha, tracker.G1, tracker.Uol),
-		colly.MaxDepth(3),
-		colly.Async(true),
+	tk := tracker.New(colly.NewCollector(
+		colly.AllowedDomains(
+		tracker.Folha,
+		tracker.G1,
+		tracker.Uol),
 	),
 		&logrus.Logger{
 			Out:       os.Stdout,
 			Formatter: &logrus.JSONFormatter{},
-		}, nil, "",
+		}, nil,
 	)
 
-	logrus.WithFields(logrus.Fields{"Text": "hello world"}).Warn("Search by content input")
+	logrus.WithFields(logrus.Fields{
+		"Title": d.Title,
+		"SubTitle":  d.SubTitle,
+		"Url": d.Url,
+	}).Warn("Init search by")
 
-	c.SearchAndInputNews()
+	err, news := tk.SearchAndInputNews()
+	if err != nil {
+		return err
+	}
+    for i := 0 ; i < len(news); i++{
+    	fmt.Printf("%+v\n",news[i])
+	}
+
+	var (
+		request http.Request
+		result []DocRequest
+	)
+
+	err = external.NewClient().Request(&request,result)
+	if err != nil {
+		return err
+	}
 
 	return nil
 
