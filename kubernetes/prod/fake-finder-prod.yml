@@ -1,18 +1,18 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: aplicacao-deployment
-spec:
-  selector: # mysql Pod Should contain same labels
-    matchLabels:
-      app: aplicacao-pod
-  template:
-    metadata:
-      labels:
-        app: aplicacao-pod
-    spec:
-      containers:
-        - name: container-minikube-helloworld
-          image: idasilva/minikube-helloworld:2.0
-          ports:
-            - containerPort: 8080
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name:
+#spec:
+#  selector: # mysql Pod Should contain same labels
+#    matchLabels:
+#      app:
+#  template:
+#    metadata:
+#      labels:
+#        app:
+#    spec:
+#      containers:
+#        - name:
+#          image:
+#          ports:
+#            - containerPort:
