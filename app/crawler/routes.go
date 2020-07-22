@@ -1,12 +1,11 @@
 package crawler
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
-	h "github.com/tc-teams/fakefinder-crawler/app/hack"
-	"github.com/tc-teams/fakefinder-crawler/external"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
 	"os"
@@ -28,10 +27,10 @@ func Init() *api.Route {
 }
 
 func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
-	hack := h.NewHack()
 	var c DocumentNews
 
-	if err := hack.ParseBody(&c, r); err != nil {
+	err := json.NewDecoder(r.Body).Decode(&c)
+	if err != nil {
 		return &api.BaseError{
 			Error:   err,
 			Message: "Invalid request body",
@@ -39,7 +38,8 @@ func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
 		}
 	}
 
-	err := HandlerCovid(c)
+
+	err = HandlerCovid(c)
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -83,16 +83,16 @@ func HandlerCovid(d DocumentNews) error {
     	fmt.Printf("%+v\n",news[i])
 	}
 
-	var (
-		request http.Request
-		result []DocRequest
-	)
-
-	err = external.NewClient().Request(&request,result)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	//var (
+	//	request http.Request
+	//	result []DocRequest
+	//)
+	//
+	//err = external.NewClient().Request(&request,result)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//return nil
 
 }

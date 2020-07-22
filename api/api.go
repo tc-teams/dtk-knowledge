@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api/server"
@@ -15,7 +14,7 @@ import (
 
 type API struct {
 	Client     *server.Client
-	Router     *mux.Router // Responsavel por guarda as rotas
+	Router     *mux.Router
 	Routes      Route
 	Middleware *Middleware
 	Validator  *validator.Validate
@@ -23,7 +22,6 @@ type API struct {
 }
 
 func(a *API) Serve() error{
-	fmt.Println("port",a.Client.Addr)
 	ctx, cancel := context.WithCancel(a.context)
 
 	go func() {
@@ -42,7 +40,6 @@ func(a *API) Serve() error{
 		defer cancel()
 		a.Client.Serve(ctx, a)
 	}()
-	fmt.Println("serve")
 
 	wg.Wait()
 	return nil

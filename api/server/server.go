@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -11,8 +10,13 @@ type Client struct {
 	*http.Server
 }
 
+const port  =  ":8000"
+
+func( s * Client) addr(){
+	s.Addr = port
+}
 func(s *Client) Serve(c context.Context, handler http.Handler){
-	fmt.Println("Create a new simple serve")
+	s.addr()
 	s.Handler = handler
 	s.ListenAndServe()
 }
@@ -21,7 +25,6 @@ func(s *Client) Serve(c context.Context, handler http.Handler){
 func NewClient() *Client{
 	return &Client{
 		Server: &http.Server{
-			Addr:           ":8000",
 			ReadTimeout:    600 * time.Second,
 			WriteTimeout:   600 * time.Second,
 		},

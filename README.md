@@ -12,11 +12,10 @@ go run main.go server
 curl -H "Content-Type: application/json" -d '{"name":"covid","url":"www.globo.com"}' http://localhost:8000/covid
 
 ```
-### Tamplete Application 
+### Template Application 
 ![Tamplete](https://drstearns.github.io/tutorials/gomiddleware/img/flow.png)
 
-### Referencies
-
+### References
 [Middleware](https://drstearns.github.io/tutorials/gomiddleware/) - Middleware Patterns in Go.  
 [Route](https://thenewstack.io/make-a-restful-json-api-go/) - Making a RESTful JSON API in Go.  
 [serve](https://aaf.engineering/go-web-application-structure-part-2/) - Go Web Application Structure - Part 2 - Routing/Serving.  
