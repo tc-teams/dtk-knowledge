@@ -1,7 +1,5 @@
 package crawler
 
-type DocumentNews struct {
-	Title    string `json:"Title"`
-	SubTitle string `json:"SubTitle"`
+type BaseUrl struct {
 	Url      string `json:"Url"`
 }
