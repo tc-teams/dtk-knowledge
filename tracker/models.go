@@ -1,5 +1,7 @@
 package tracker
 
+import "time"
+
 const (
 	G1         = "g1.globo.com"
 	Folha      = "www1.folha.uol.com.br"
@@ -11,8 +13,9 @@ const (
 
 //RelatedNews is used to describe article model.
 type RelatedNews struct {
-	Title    string `validate:"required,max=500"`
-	SubTitle string `validate:"required,max=500"`
-	//Date     string `validate:"required,max=500"`
-	Page string `validate:"required,max=500"`
+	Url      string              `validate:"required,max=500"`
+	Date     time.Time            `validate:"required,max=10"`
+	Title    string              `validate:"required,max=500"`
+	Subtitle string              `validate:"required,max=500"`
+	Body     string              `validate:"required,max=500"`
 }

@@ -2,13 +2,10 @@ package crawler
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
-	"os"
 )
 
 const routerName = "crawler"
@@ -19,17 +16,17 @@ func Init() *api.Route {
 	r.RouteName(routerName)
 	r.AddRoute(&api.ContextRoute{
 		Method:  http.MethodPost,
-		Path:    "/covid",
-		Handler: NewsRelatedToCovid,
+		Path:    "/search/news/related/covid",
+		Handler: SearchNewsRelatedToCovid,
 	})
 
 	return r
 }
 
-func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
-	var c DocumentNews
+func SearchNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
+	var b BaseUrl
 
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err := json.NewDecoder(r.Body).Decode(&b)
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -38,8 +35,7 @@ func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
 		}
 	}
 
-
-	err = HandlerCovid(c)
+	err = HandlerCovid(b)
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -55,33 +51,27 @@ func NewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
 
 }
 
-func HandlerCovid(d DocumentNews) error {
+func HandlerCovid(base BaseUrl) error {
 
-	tk := tracker.New(colly.NewCollector(
-		colly.AllowedDomains(
-		tracker.Folha,
-		tracker.G1,
-		tracker.Uol),
-	),
-		&logrus.Logger{
-			Out:       os.Stdout,
-			Formatter: &logrus.JSONFormatter{},
-		}, nil,
-	)
+	tk := tracker.New()
 
-	logrus.WithFields(logrus.Fields{
-		"Title": d.Title,
-		"SubTitle":  d.SubTitle,
-		"Url": d.Url,
-	}).Warn("Init search by")
-
-	err, news := tk.SearchAndInputNews()
+	related, err := tk.TrackNewsOnUrl(base.Url)
 	if err != nil {
 		return err
 	}
-    for i := 0 ; i < len(news); i++{
-    	fmt.Printf("%+v\n",news[i])
-	}
+
+	logrus.WithFields(logrus.Fields{
+		"Url":      related.Url,
+		"Date":     related.Date,
+		"Title":    related.Title,
+		"SubTitle": related.Subtitle,
+		"Body":     related.Body,
+	}).Warn("Create a new crawler based on url")
+
+	//err, _ = tk.TrackNewsBasedOnUrl(related.Title)
+	//if err != nil {
+	//	return err
+	//}
 
 	//var (
 	//	request http.Request
@@ -93,6 +83,6 @@ func HandlerCovid(d DocumentNews) error {
 	//	return err
 	//}
 	//
-	//return nil
+	return nil
 
 }
