@@ -1,25 +1,22 @@
-package tracker
+package crawl
 
 import (
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
-	"strings"
 	"time"
 )
 
-const LayouISO8601 = "01/02/2006"
-
-type Track struct {
+type Crawl struct {
 	Colly *colly.Collector
 }
 
 //LoadNews returns related crawler by an entry
-func (t *Track) TrackNewsBasedOnUrl(bind string) (error, []RelatedNews) {
+func (t *Crawl) TrackNewsBasedOnCovid19() (error, []RelatedNews) {
 
-	detailColly := t.Colly.Clone()
 	news := make([]RelatedNews, 0, 2)
+	detailsNews := RelatedNews{}
 	stop := false
-
+	var i int
 	t.Colly.OnRequest(func(r *colly.Request) {
 		log.WithFields(log.Fields{
 			"Visiting": r.URL.String()}).Info("int search")
@@ -36,43 +33,14 @@ func (t *Track) TrackNewsBasedOnUrl(bind string) (error, []RelatedNews) {
 
 	})
 
-	t.Colly.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		subUrl := e.Request.AbsoluteURL(e.Attr("href"))
-		if strings.Index(subUrl, "Covid") > -1 || strings.Index(subUrl, "coronavírus") > -1 ||
-			strings.Index(subUrl, "Covid-19") > -1 || strings.Index(subUrl, "pandemia") > -1 ||
-			strings.Index(subUrl, "quarentena") > -1 && !stop {
-			detailColly.Visit(subUrl)
-		}
+	t.Colly.OnHTML("#bstn-launcher a[href]", func(e *colly.HTMLElement) {
+		e.Request.Visit(e.Attr("href"))
+		i +=1
 	})
-	detailColly.OnHTML("head", func(e *colly.HTMLElement) {
 
-		detailsNews := RelatedNews{}
-		e.ForEach("meta", func(_ int, el *colly.HTMLElement) {
-			switch el.Attr("property") {
-			case "og:title":
-				detailsNews.Title = el.Attr("content")
-			case "og:description":
-				detailsNews.Subtitle = el.Attr("content")
-			}
-		})
-		detailsNews.Url = e.Request.URL.Host
-		news = append(news, detailsNews)
-
-	})
-	t.Colly.Limit(&colly.LimitRule{Parallelism: 3, RandomDelay: 1 * time.Second})
-
-	t.Colly.Visit(StartFolha)
-	t.Colly.Visit(StartG1)
-	t.Colly.Visit(StartUol)
-	t.Colly.Wait()
-
-	return nil, news
-}
-
-func (t *Track) TrackNewsOnUrl(baseUrl string) (RelatedNews, error) {
-	detailsNews := RelatedNews{}
 
 	t.Colly.OnHTML("head", func(e *colly.HTMLElement) {
+
 
 		e.ForEach("meta", func(_ int, el *colly.HTMLElement) {
 			switch el.Attr("property") {
@@ -88,7 +56,8 @@ func (t *Track) TrackNewsOnUrl(baseUrl string) (RelatedNews, error) {
 	t.Colly.OnHTML("main", func(e *colly.HTMLElement) {
 
 		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
-			detailsNews.Body += el.Text
+				detailsNews.Body += el.Text
+
 
 		})
 
@@ -105,18 +74,21 @@ func (t *Track) TrackNewsOnUrl(baseUrl string) (RelatedNews, error) {
 		if detailsNews.Date.IsZero() {
 			detailsNews.Date = time
 		}
+        news = append(news, detailsNews)
 
 	})
+	t.Colly.Limit(&colly.LimitRule{Parallelism: 3, RandomDelay: 1 * time.Second})
 
-	t.Colly.Visit(baseUrl)
+
+	t.Colly.Visit(StartG1)
 	t.Colly.Wait()
 
-	return detailsNews, nil
+	return nil, news
 }
 
 //New return crawler  instance of colly
-func New() *Track {
-	return &Track{
+func NewCrawler() *Crawl {
+	return &Crawl{
 		Colly: colly.NewCollector(colly.AllowedDomains(Folha, G1, Uol)),
 	}
 

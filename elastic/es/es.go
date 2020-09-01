@@ -6,29 +6,34 @@ import (
 	"github.com/olivere/elastic"
 	"time"
 )
-
+//https://olivere.github.io/elastic/
 type Elastic struct {
 	client *elastic.Client
+	ctx    context.Context
 }
 
 // Hit is a structure used for serializing/deserializing data in Elasticsearch.
 type Hit struct {
-	Link string
-	Name string
-	Date time.Time
+	Url      string
+	Date     time.Time
+	Title    string
+	Subtitle string
+	Body     string
 }
+//Search
+func (e *Elastic) Search() {
 
-//NewClient return a crawler instance client
-func NewClient(url string) (*Elastic, error) {
-
-	client, err := elastic.NewClient(elastic.SetURL(url))
+	result, err := e.client.Get().
+		Index("twitter").
+		Type("tweet").
+		Id("1").
+		Do(e.ctx)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &Elastic{client}, nil
-}
-
-func search() {
+	if result.Found {
+		fmt.Printf("Got document %s in version %d from index %s, type %s\n", result.Id, result.Version, result.Index, result.Type)
+	}
 
 }
 
@@ -63,4 +68,14 @@ func (e *Elastic) Index(ctx context.Context, index string, body interface{}) (st
 	fmt.Printf("Indexed tweet %s to index %s, type %s\n", put.Id, put.Index, put.Type)
 
 	return put.Id, nil
+}
+
+//NewInstanceElastic return a crawler instance client
+func NewInstanceElastic(url string) (*Elastic, error) {
+
+	client, err := elastic.NewClient(elastic.SetURL(url))
+	if err != nil {
+		return nil, err
+	}
+	return &Elastic{client, context.Background()}, nil
 }

@@ -16,7 +16,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/mitchellh/mapstructure v1.3.2 // indirect
-	github.com/olivere/elastic v6.2.31+incompatible
+	github.com/olivere/elastic v6.2.35+incompatible
 	github.com/pelletier/go-toml v1.8.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.6.0

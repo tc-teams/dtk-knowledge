@@ -1,4 +1,4 @@
-package tracker
+package crawl
 
 import "time"
 
@@ -10,6 +10,9 @@ const (
 	StartG1    = "https://g1.globo.com/bemestar/coronavirus/"
 	StartUol   = "https://noticias.uol.com.br/coronavirus/"
 )
+type Info struct {
+	Description      string `json:"description"`
+}
 
 //RelatedNews is used to describe article model.
 type RelatedNews struct {

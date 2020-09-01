@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
+	"github.com/tc-teams/fakefinder-crawler/elastic"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
+	"github.com/tc-teams/fakefinder-crawler/tracker/crawl"
 	"net/http"
 )
 
@@ -17,16 +19,21 @@ func Init() *api.Route {
 	r.AddRoute(&api.ContextRoute{
 		Method:  http.MethodPost,
 		Path:    "/search/news/related/covid",
-		Handler: SearchNewsRelatedToCovid,
-	})
+		Handler: CrawlNewsRelatedToCovid,
+	}, &api.ContextRoute{
+		Method:  http.MethodPost,
+		Path:    "/teste",
+		Handler: ElasticCrawlByDescription,
+	},
+	)
 
 	return r
 }
 
-func SearchNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
-	var b BaseUrl
+func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
+	var information crawl.Info
 
-	err := json.NewDecoder(r.Body).Decode(&b)
+	err := json.NewDecoder(r.Body).Decode(&information)
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -35,7 +42,7 @@ func SearchNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseE
 		}
 	}
 
-	err = HandlerCovid(b)
+	err = tracker.WebCrawlerNews()
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -51,38 +58,42 @@ func SearchNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseE
 
 }
 
-func HandlerCovid(base BaseUrl) error {
+func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request) *api.BaseError {
 
-	tk := tracker.New()
-
-	related, err := tk.TrackNewsOnUrl(base.Url)
+	documents, err := elastic.ElasticDocumentsByDescription()
 	if err != nil {
-		return err
+		return &api.BaseError{
+			Error:   err,
+			Message: "Elastic error",
+			Code:    http.StatusNotFound,
+		}
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"Url":      related.Url,
-		"Date":     related.Date,
-		"Title":    related.Title,
-		"SubTitle": related.Subtitle,
-		"Body":     related.Body,
-	}).Warn("Create a new crawler based on url")
+	for index, news := range documents {
 
-	//err, _ = tk.TrackNewsBasedOnUrl(related.Title)
-	//if err != nil {
-	//	return err
-	//}
+		logrus.WithFields(logrus.Fields{
+			"Url":      news.Url,
+			"Date":     news.Date,
+			"Title":    news.Title,
+			"SubTitle": news.Subtitle,
+			"Body":     news.Body,
+		}).Warn("News related:", index)
 
-	//var (
+	}
+//var (
 	//	request http.Request
-	//	result []DocRequest
+	//	result []
 	//)
 	//
 	//err = external.NewClient().Request(&request,result)
 	//if err != nil {
 	//	return err
 	//}
-	//
-	return nil
+
+	return &api.BaseError{
+		Error:   nil,
+		Message: "OK",
+		Code:    http.StatusOK,
+	}
 
 }

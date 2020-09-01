@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -12,11 +13,12 @@ type Client struct {
 
 const port  =  ":8000"
 
-func( s * Client) addr(){
+func( s * Client) addr()string{
 	s.Addr = port
+	return s.Addr
 }
 func(s *Client) Serve(c context.Context, handler http.Handler){
-	s.addr()
+	fmt.Println("Create a sample server, port:",s.addr())
 	s.Handler = handler
 	s.ListenAndServe()
 }
