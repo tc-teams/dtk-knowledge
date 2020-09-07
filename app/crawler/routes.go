@@ -5,8 +5,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	"github.com/tc-teams/fakefinder-crawler/elastic"
+	"github.com/tc-teams/fakefinder-crawler/elastic/es"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
-	"github.com/tc-teams/fakefinder-crawler/tracker/crawl"
 	"net/http"
 )
 
@@ -30,8 +30,8 @@ func Init() *api.Route {
 	return r
 }
 
-func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseError {
-	var information crawl.Info
+func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Logging) *api.BaseError {
+	var information es.Info
 
 	err := json.NewDecoder(r.Body).Decode(&information)
 	if err != nil {
@@ -42,7 +42,7 @@ func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseEr
 		}
 	}
 
-	err = tracker.WebCrawlerNews()
+	err = tracker.WebCrawlerNews(log)
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -58,9 +58,20 @@ func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request) *api.BaseEr
 
 }
 
-func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request) *api.BaseError {
+func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.Logging) *api.BaseError {
 
-	documents, err := elastic.ElasticDocumentsByDescription()
+	var info es.Info
+
+	err := json.NewDecoder(r.Body).Decode(&info)
+	if err != nil {
+		return &api.BaseError{
+			Error:   err,
+			Message: "Invalid request body",
+			Code:    http.StatusBadRequest,
+		}
+	}
+
+	documents, err := elastic.DocumentsByDescription(log, info.Description)
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -69,18 +80,18 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request) *api.Base
 		}
 	}
 
-	for index, news := range documents {
+	for index, related := range documents {
 
-		logrus.WithFields(logrus.Fields{
-			"Url":      news.Url,
-			"Date":     news.Date,
-			"Title":    news.Title,
-			"SubTitle": news.Subtitle,
-			"Body":     news.Body,
-		}).Warn("News related:", index)
+		log.WithFields(logrus.Fields{
+			"Url":      related.News.Url,
+			"Date":     related.News.Date,
+			"Title":    related.News.Title,
+			"SubTitle": related.News.Subtitle,
+			"Body":     related.News.Body,
+		}).Info("News related:", index)
 
 	}
-//var (
+	//var (
 	//	request http.Request
 	//	result []
 	//)

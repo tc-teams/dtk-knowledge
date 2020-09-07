@@ -1,9 +1,5 @@
 package api
 
-import (
-	"github.com/sirupsen/logrus"
-)
-
 type Route struct {
 	Name  string          `json:"name"`
 	Route []*ContextRoute `json:"route"`
@@ -25,9 +21,6 @@ func (a *API) InitRoute(r ...*Route) {
 	for _, rt := range r[len(r)-1].Route {
 		rt.api = a
 		rt.mux = a.Router.Handle(rt.Path, rt).Methods(rt.Method)
-		logrus.WithFields(logrus.Fields{
-			"Method": rt.Method,
-		}).Info("Create a new rote: ", rt.Path)
 	}
 
 }

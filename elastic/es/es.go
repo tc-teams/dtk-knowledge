@@ -2,50 +2,124 @@ package es
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"github.com/olivere/elastic"
-	"time"
+	"github.com/olivere/elastic/v7"
+	log "github.com/sirupsen/logrus"
+	"strings"
 )
-//https://olivere.github.io/elastic/
+
+
 type Elastic struct {
-	client *elastic.Client
-	ctx    context.Context
+	*elastic.Client
+	ctx context.Context
 }
 
-// Hit is a structure used for serializing/deserializing data in Elasticsearch.
-type Hit struct {
-	Url      string
-	Date     time.Time
-	Title    string
-	Subtitle string
-	Body     string
-}
 //Search
-func (e *Elastic) Search() {
+func (e *Elastic) MatchQueryByIndex(description string) ([]Data, error) {
 
-	result, err := e.client.Get().
-		Index("twitter").
-		Type("tweet").
-		Id("1").
+	var source []Data
+
+	searchSource := elastic.NewSearchSource()
+	searchSource.Query(elastic.NewMatchQuery(Fields,description))
+
+	query, err := searchSource.Source()
+	if err != nil {
+		return nil, err
+	}
+	queryJSON, err := json.Marshal(query)
+	if err != nil {
+		return nil, err
+	}
+
+	log.WithFields(log.Fields{
+		"query": queryJSON,
+	}).Info(queryJSON)
+
+	searchService := e.Search().
+		Index(Index).
+		SearchSource(searchSource)
+
+	searchResult, err := searchService.Do(e.ctx)
+	if err != nil {
+		return nil, err
+	}
+	log.WithFields(log.Fields{
+		"totalhits:": searchResult.Hits.TotalHits,
+	}).Info("hits")
+
+	for _, hit := range searchResult.Hits.Hits {
+		var data Data
+		err := json.Unmarshal(hit.Source, &data)
+		if err != nil {
+			return nil, err
+		}
+		if strings.Index(data.News.Title, description) > -1 {
+			source = append(source, data)
+		}
+	}
+
+	if err != nil {
+		return nil, err
+
+	} else {
+		for _, data := range source {
+			log.WithFields(log.Fields{
+				"Url":      data.News.Url,
+				"Date":     data.News.Date,
+				"Title":    data.News.Title,
+				"SubTitle": data.News.Subtitle,
+				//"Body":     s.News.Body,
+			}).Info("data found on index:", Index)
+
+		}
+
+	}
+
+	return source, nil
+}
+
+func (e *Elastic) EspecifiedValeus() {
+
+	// Get tweet with specified ID
+	get1, err := e.Get().
+		Index("logstash").
+		Id("oSrSUnQBztIBJVw8hkmj").
 		Do(e.ctx)
 	if err != nil {
+		// Handle error
 		panic(err)
 	}
-	if result.Found {
-		fmt.Printf("Got document %s in version %d from index %s, type %s\n", result.Id, result.Version, result.Index, result.Type)
+	if get1.Found {
+		var hits Data
+		err := json.Unmarshal(get1.Source, &hits)
+		if err != nil {
+			fmt.Println("nao foi possivel fazer a conversao")
+		}
+		fmt.Printf("Got document %s", hits)
 	}
+}
 
+func (e *Elastic) Version(url string) (bool, error) {
+
+	esversion, err := e.Client.ElasticsearchVersion(url)
+	if err != nil {
+		return false, err
+
+	}
+	fmt.Printf("Elasticsearch version %s\n", esversion)
+	return true, nil
 }
 
 //TODO remove this method when create a mapping using kibana
 func (e *Elastic) AddIndex(ctx context.Context, index string, body string) (string, error) {
 
-	exists, err := e.client.IndexExists(index).Do(ctx)
+	exists, err := e.Client.IndexExists(index).Do(ctx)
 	if err != nil {
 		return "", err
 	}
 	if !exists {
-		createIndex, err := e.client.CreateIndex(index).BodyString(body).Do(ctx)
+		createIndex, err := e.Client.CreateIndex(index).BodyString(body).Do(ctx)
 		if err != nil {
 			return "", err
 		}
@@ -57,7 +131,7 @@ func (e *Elastic) AddIndex(ctx context.Context, index string, body string) (stri
 
 }
 func (e *Elastic) Index(ctx context.Context, index string, body interface{}) (string, error) {
-	put, err := e.client.Index().
+	put, err := e.Client.Index().
 		Index(index).
 		BodyJson(body).
 		Do(ctx)
@@ -65,16 +139,18 @@ func (e *Elastic) Index(ctx context.Context, index string, body interface{}) (st
 	if err != nil {
 		return "", nil
 	}
-	fmt.Printf("Indexed tweet %s to index %s, type %s\n", put.Id, put.Index, put.Type)
+	fmt.Printf("index %s, type %s\n", put.Index, put.Type)
 
 	return put.Id, nil
 }
 
 //NewInstanceElastic return a crawler instance client
-func NewInstanceElastic(url string) (*Elastic, error) {
+func NewInstanceElastic(url string, user string, password string) (*Elastic, error) {
 
-	client, err := elastic.NewClient(elastic.SetURL(url))
+
+	client, err := elastic.NewClient(elastic.SetURL(url), elastic.SetBasicAuth(user, password))
 	if err != nil {
+		fmt.Println("erro na autenticação", err)
 		return nil, err
 	}
 	return &Elastic{client, context.Background()}, nil

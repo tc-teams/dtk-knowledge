@@ -1,19 +1,28 @@
 package elastic
 
 import (
-	es "github.com/tc-teams/fakefinder-crawler/elastic/es"
-	"github.com/tc-teams/fakefinder-crawler/tracker/crawl"
+	"github.com/spf13/viper"
+	"github.com/tc-teams/fakefinder-crawler/api"
+	"github.com/tc-teams/fakefinder-crawler/elastic/es"
 )
 
-var url = "http://localhost:5061"
+//DocumentsByDescription return
+func DocumentsByDescription(log *api.Logging, description string) ([]es.Data, error) {
+	Url := viper.GetString("Url")
+	User := viper.GetString("User")
+	Password := viper.GetString("Password")
 
-func ElasticDocumentsByDescription() ([]*crawl.RelatedNews, error) {
-
-	es, err := es.NewInstanceElastic(url)
+	es, err := es.NewInstanceElastic(Url, User, Password)
 	if err != nil {
 		return nil, err
 	}
-	es.Search()
-	return nil, nil
+	log.Println("New Instance of elastic search created")
+
+	source, err := es.MatchQueryByIndex(description)
+	if err != nil {
+		return nil, err
+	}
+
+	return source, nil
 
 }

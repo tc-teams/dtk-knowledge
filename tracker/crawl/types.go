@@ -10,15 +10,15 @@ const (
 	StartG1    = "https://g1.globo.com/bemestar/coronavirus/"
 	StartUol   = "https://noticias.uol.com.br/coronavirus/"
 )
-type Info struct {
-	Description      string `json:"description"`
-}
+
 
 //RelatedNews is used to describe article model.
 type RelatedNews struct {
-	Url      string              `validate:"required,max=500"`
-	Date     time.Time            `validate:"required,max=10"`
-	Title    string              `validate:"required,max=500"`
-	Subtitle string              `validate:"required,max=500"`
-	Body     string              `validate:"required,max=500"`
+	Url      string    `json:"Url""`
+	Time     time.Time `json:"time"`
+	Date     time.Time `json:"Date"`
+	Title    string    `json:"Title"`
+	Subtitle string    `json:"Subtitle"`
+	Body     string    `json:"Body"`
+	msg      string    `json:"msg,omitempty"`
 }

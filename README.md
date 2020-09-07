@@ -24,3 +24,5 @@ curl -H "Content-Type: application/json" -d '{"name":"covid","url":"www.globo.co
 [ChainMiddleware](https://kenyaappexperts.com/blog/using-middleware-in-go/) - Using Middleware In Go The Right Way.  
 [ServeMux](https://gist.github.com/delsner/64e79da93a77aa364e79013d3baeaa3e#file-address-go-L10) - Git repository.
 [Elastic](//https://olivere.github.io/elastic/)
+[Elastic1](https://www.freecodecamp.org/news/go-elasticsearch/)
+[Elastic2](https://olivere.github.io/elastic/)

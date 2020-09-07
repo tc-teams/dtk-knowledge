@@ -2,10 +2,12 @@ package crawl
 
 import (
 	"github.com/gocolly/colly"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"time"
 )
-
+var (
+	stop = bool(false)
+)
 type Crawl struct {
 	Colly *colly.Collector
 }
@@ -15,29 +17,13 @@ func (t *Crawl) TrackNewsBasedOnCovid19() (error, []RelatedNews) {
 
 	news := make([]RelatedNews, 0, 2)
 	detailsNews := RelatedNews{}
-	stop := false
-	var i int
-	t.Colly.OnRequest(func(r *colly.Request) {
-		log.WithFields(log.Fields{
-			"Visiting": r.URL.String()}).Info("int search")
-	})
-	t.Colly.OnScraped(func(r *colly.Response) {
-		log.WithFields(log.Fields{
-			"Finished": r.Request.URL}).Info("end search")
-	})
-
-	t.Colly.OnError(func(_ *colly.Response, e error) {
-		stop = true
-		log.WithFields(log.Fields{
-			"Error": e.Error()}).Info("error search")
-
-	})
 
 	t.Colly.OnHTML("#bstn-launcher a[href]", func(e *colly.HTMLElement) {
-		e.Request.Visit(e.Attr("href"))
-		i +=1
-	})
+		if !stop {
+			e.Request.Visit(e.Attr("href"))
+		}
 
+	})
 
 	t.Colly.OnHTML("head", func(e *colly.HTMLElement) {
 
@@ -66,7 +52,7 @@ func (t *Crawl) TrackNewsBasedOnCovid19() (error, []RelatedNews) {
 
 		time, err := time.Parse(time.RFC3339, e.Attr("datetime"))
 		if err != nil {
-			log.WithFields(log.Fields{
+			logrus.WithFields(logrus.Fields{
 				"Date": time,
 			}).Info("Was not possible convert string to Date")
 
@@ -75,8 +61,12 @@ func (t *Crawl) TrackNewsBasedOnCovid19() (error, []RelatedNews) {
 			detailsNews.Date = time
 		}
         news = append(news, detailsNews)
+        if len(news) == 100{
+        	stop = true
+		}
 
 	})
+
 	t.Colly.Limit(&colly.LimitRule{Parallelism: 3, RandomDelay: 1 * time.Second})
 
 

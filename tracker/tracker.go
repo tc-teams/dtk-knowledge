@@ -2,10 +2,11 @@ package tracker
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/tc-teams/fakefinder-crawler/api"
 	"github.com/tc-teams/fakefinder-crawler/tracker/crawl"
 )
 
-func WebCrawlerNews() error {
+func WebCrawlerNews(log *api.Logging) error {
 
 	cl := crawl.NewCrawler()
 
@@ -16,13 +17,13 @@ func WebCrawlerNews() error {
 
 	for index, news := range related {
 
-		logrus.WithFields(logrus.Fields{
+		log.WithFields(logrus.Fields{
 			"Url":      news.Url,
-			"Date":     news.Date,
+			"Date":     news.Time,
 			"Title":    news.Title,
 			"SubTitle": news.Subtitle,
 			"Body":     news.Body,
-		}).Warn("News related:",index)
+		}).Info("News related:",index)
 
 	}
 	return nil
