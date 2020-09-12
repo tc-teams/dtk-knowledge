@@ -4,12 +4,19 @@ import (
 	"errors"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
+	ctx "github.com/tc-teams/fakefinder-crawler/context/validator"
+	"regexp"
 	"time"
 )
 
+var (
+	stop = bool(false)
+)
+
 type G1 struct {
-	Colly *colly.Collector
-	News  []RelatedNews
+	Colly     *colly.Collector
+	News      []RelatedNews
+	validator *ctx.Validation
 }
 
 //LoadNews returns related crawler by an entry
@@ -20,7 +27,6 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 		if !stop {
 			e.Request.Visit(e.Attr("href"))
 			detailsNews.Url = e.Attr("href")
-
 		}
 
 	})
@@ -42,8 +48,6 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 			text := el.Text
 			detailsNews.Body += text
 
-
-
 		})
 
 	})
@@ -59,15 +63,13 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 		if detailsNews.Date.IsZero() {
 			detailsNews.Date = time
 		}
+		if err := g.validator.ValidateStruct(detailsNews); err != nil {
+			return
+		}
 		g.News = append(g.News, detailsNews)
 		if len(g.News) == 2 {
 			stop = true
 		}
-		logrus.WithFields(logrus.Fields{
-			"title": detailsNews.Title,
-			"Body":  detailsNews.Body,
-			"url": detailsNews.Url,
-		}).Info()
 		detailsNews.Body = ""
 
 	})
@@ -85,12 +87,15 @@ func (g *G1) LoggingDocuments() error {
 	}
 	for index, news := range g.News {
 
+		space := regexp.MustCompile(`\s+`)
+		s := space.ReplaceAllString(news.Body, " ")
+
 		logrus.WithFields(logrus.Fields{
 			"Url":      news.Url,
 			"Date":     news.Time,
 			"Title":    news.Title,
 			"SubTitle": news.Subtitle,
-			"Body":     news.Body,
+			"Body":     s,
 		}).Info("News related:", index)
 
 	}
@@ -100,7 +105,8 @@ func (g *G1) LoggingDocuments() error {
 //NewG1 return crawler  instance of colly
 func NewG1() Crawler {
 	return &G1{
-		Colly: colly.NewCollector(colly.AllowedDomains(Folha, GB, Uol)),
-		News:  nil,
+		Colly:     colly.NewCollector(colly.AllowedDomains(Folha, GB, Uol)),
+		News:      []RelatedNews{},
+		validator: ctx.NewValidate(),
 	}
 }

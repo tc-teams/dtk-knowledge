@@ -7,7 +7,7 @@ import (
 )
 
 
-type Handler func(w http.ResponseWriter, r *http.Request, l *Logging)  *BaseError
+type Handler func(w http.ResponseWriter, r *http.Request, logging *Logging)  *BaseError
 
 type ContextRoute struct {
 	api      *API   //router
@@ -24,13 +24,12 @@ type ContextRoute struct {
 //ServeHTTP method with the following signature:
 func (c ContextRoute) ServeHTTP(w http.ResponseWriter, r *http.Request){
 	c.WContentType(w)
-
 	log := NewLog()
 	log.Config()
 
 	err := c.api.Middleware.ChainMiddleware(c.Handler)(w,r,log)
 	if err != nil {
-		log.WithFields(logrus.Fields{
+		c.api.logging.WithFields(logrus.Fields{
 			"Error": err.Error,
 		}).Error()
 		http.Error(w, err.Message,err.Code)

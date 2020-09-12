@@ -4,8 +4,6 @@ import (
 	"context"
 	"github.com/gorilla/mux"
 	"github.com/tc-teams/fakefinder-crawler/api/server"
-	elastic2 "github.com/tc-teams/fakefinder-crawler/elastic/es"
-	"gopkg.in/go-playground/validator.v8"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,9 +17,7 @@ type API struct {
 	Router     *mux.Router
 	Routes     *Route
 	Middleware *Middleware
-	Validator  *validator.Validate
 	context    context.Context
-	elastic    *elastic2.Elastic
 	logging   *Logging
 }
 
@@ -56,18 +52,12 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // NewContextApi returns a new instance API
 func NewContextApi() (*API, error) {
-	//es, err := es.NewInstanceElastic(esurl)
-	//if err != nil {
-	//	return nil, err
-	//
-	//}
 	return &API{
 		Client:     server.NewClient(),
 		Middleware: newMiddlewareContext(),
 		Router:     mux.NewRouter().StrictSlash(true),
-		Validator:  NewValidate().Validate,
 		context:    context.Background(),
-		elastic:    nil,
 		logging: NewLog(),
+
 	}, nil
 }

@@ -11,18 +11,17 @@ const (
 	StartUol   = "https://noticias.uol.com.br/coronavirus/"
 )
 
-
 //RelatedNews is used to describe article model.
 type RelatedNews struct {
-	Url      string    `json:"Url""`
+	Url      string    `json:"url"`
 	Time     time.Time `json:"time"`
-	Date     time.Time `json:"Date"`
-	Title    string    `json:"Title"`
-	Subtitle string    `json:"Subtitle"`
-	Body     string    `json:"Body"`
-	msg      string    `json:"msg,omitempty"`
+	Date     time.Time `json:"date"`
+	Title    string    `json:"title"`
+	Subtitle string    `json:"subtitle"`
+	Body     string    `validator:"required"`
+	Msg      string    `json:"msg"`
 }
 
-var (
-	stop = bool(false)
-)
+type Teste struct {
+	Teste string `validator:"required"`
+}

@@ -9,6 +9,7 @@ require (
 	github.com/antchfx/xpath v1.1.5 // indirect
 	github.com/devilsray/golang-viper-config-example v0.0.0-20170611133002-f6dfecb74eef // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/gocolly/colly v1.2.0
 	github.com/gocolly/colly/v2 v2.0.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect

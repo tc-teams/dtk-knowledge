@@ -10,6 +10,7 @@ import (
 	"github.com/tc-teams/fakefinder-crawler/external"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
+	"time"
 )
 
 const routerName = "crawler"
@@ -54,6 +55,7 @@ func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Lo
 
 }
 
+
 func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.Logging) *api.BaseError {
 
 	var info es.Info
@@ -91,14 +93,16 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.
 	for _, related := range documents {
 		reqBody.Related = append(reqBody.Related, related.News.Body)
 	}
+	fmt.Println("quantidade:",len(reqBody.Related))
+	time.Sleep(10*time.Second)
 
-	for _, r := range reqBody.Description {
-		fmt.Printf("description on request %s", r)
+
+	for q, i := range reqBody.Related{
+		fmt.Printf("Documents%s: %s",q,i)
+
 	}
 
-	for _, r := range reqBody.Related {
-		fmt.Println("body relatade on request", r)
-	}
+
 
 	//related, err := external.NewClient().Request(reqBody)
 	//if err != nil {
