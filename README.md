@@ -9,7 +9,7 @@ go run main.go server
 ```
 ### Teste
 ```
-curl -H "Content-Type: application/json" -d '{"name":"covid","url":"www.globo.com"}' http://localhost:8000/covid
+curl -H "Content-Type: application/json" -d '{"description":"something"}' http://localhost:8000/teste
 
 ```
 ### Template Application 

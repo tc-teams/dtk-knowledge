@@ -45,8 +45,8 @@ func (e *Elastic) MatchQueryByIndex(description string) ([]Data, error) {
 		return nil, err
 	}
 	log.WithFields(log.Fields{
-		"totalhits:": searchResult.Hits.TotalHits,
-	}).Info("hits")
+		"hits:": searchResult.Hits.TotalHits,
+	}).Info()
 
 	for _, hit := range searchResult.Hits.Hits {
 		var data Data
@@ -61,18 +61,6 @@ func (e *Elastic) MatchQueryByIndex(description string) ([]Data, error) {
 
 	if err != nil {
 		return nil, err
-
-	} else {
-		for _, data := range source {
-			log.WithFields(log.Fields{
-				"Url":      data.News.Url,
-				"Date":     data.News.Date,
-				"Title":    data.News.Title,
-				"SubTitle": data.News.Subtitle,
-				//"Body":     s.News.Body,
-			}).Info("data found on index:", Index)
-
-		}
 
 	}
 

@@ -1,6 +1,9 @@
 package external
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -10,32 +13,49 @@ const (
 )
 
 type Client struct {
-	BaseURL    string
-	HTTPClient *http.Client
+	*http.Client
 }
 
-func(c *Client) Request(r *http.Request, v interface{}) error{
-    c.RContentType(r)
-	request, err := c.HTTPClient.Do(r)
+func (c *Client) Request(r *BotRequest) (BotRequest, error) {
+	reqBytes, err := json.Marshal(r)
+
 	if err != nil {
-		return err
+		return BotRequest{},err
 	}
-	defer r.Body.Close()
+	request, err := http.NewRequest(
+		http.MethodPost,
+		BaseURL,
+		bytes.NewBuffer(reqBytes),
+	)
+	request.Header.Set("Accept", "application/json; charset=utf-8")
 
-	if request.StatusCode != http.StatusOK {
-		return err
+	if err != nil {
+		return BotRequest{},err
 	}
-	return nil
-}
-func (c * Client) RContentType(r *http.Request) {
-	r.Header.Set("Accept", "application/json; charset=utf-8")
+	resp, err := c.Client.Do(request)
+	if err != nil {
+		return BotRequest{},  err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return BotRequest{}, err
+	}
+	var response BotRequest
+	if err := json.Unmarshal(body, &response); err != nil {
+		return BotRequest{},err
+
+	}
+
+	return response, nil
 }
 
 //NewClient return a new client instance
 func NewClient() *Client {
 	return &Client{
-		BaseURL: BaseURL,
-		HTTPClient: &http.Client{
+		&http.Client{
 			Timeout: time.Minute,
 		},
 	}

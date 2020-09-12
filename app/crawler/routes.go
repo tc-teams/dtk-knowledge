@@ -2,10 +2,12 @@ package crawler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	"github.com/tc-teams/fakefinder-crawler/elastic"
 	"github.com/tc-teams/fakefinder-crawler/elastic/es"
+	"github.com/tc-teams/fakefinder-crawler/external"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
 )
@@ -31,18 +33,8 @@ func Init() *api.Route {
 }
 
 func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Logging) *api.BaseError {
-	var information es.Info
 
-	err := json.NewDecoder(r.Body).Decode(&information)
-	if err != nil {
-		return &api.BaseError{
-			Error:   err,
-			Message: "Invalid request body",
-			Code:    http.StatusBadRequest,
-		}
-	}
-
-	err = tracker.WebCrawlerNews(log)
+	err := tracker.WebCrawlerNews()
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -50,6 +42,10 @@ func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Lo
 			Code:    http.StatusNotFound,
 		}
 	}
+	log.WithFields(logrus.Fields{
+		"WebCrawler": "Search news success",
+	}).Info()
+
 	return &api.BaseError{
 		Error:   nil,
 		Message: "OK",
@@ -80,26 +76,39 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.
 		}
 	}
 
-	for index, related := range documents {
-
-		log.WithFields(logrus.Fields{
-			"Url":      related.News.Url,
-			"Date":     related.News.Date,
-			"Title":    related.News.Title,
-			"SubTitle": related.News.Subtitle,
-			"Body":     related.News.Body,
-		}).Info("News related:", index)
+	if documents == nil {
+		return &api.BaseError{
+			Error:   err,
+			Message: "No data found",
+			Code:    http.StatusNotFound,
+		}
 
 	}
-	//var (
-	//	request http.Request
-	//	result []
-	//)
-	//
-	//err = external.NewClient().Request(&request,result)
+	reqBody := &external.BotRequest{
+		Description: info.Description,
+	}
+
+	for _, related := range documents {
+		reqBody.Related = append(reqBody.Related, related.News.Body)
+	}
+
+	for _, r := range reqBody.Description {
+		fmt.Printf("description on request %s", r)
+	}
+
+	for _, r := range reqBody.Related {
+		fmt.Println("body relatade on request", r)
+	}
+
+	//related, err := external.NewClient().Request(reqBody)
 	//if err != nil {
-	//	return err
+	//	return &api.BaseError{
+	//		Error:   err,
+	//		Message: "error request a external service",
+	//		Code:    http.StatusBadGateway,
+	//	}
 	//}
+	//fmt.Println(related)
 
 	return &api.BaseError{
 		Error:   nil,

@@ -2,13 +2,13 @@ package es
 
 import (
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/tc-teams/fakefinder-crawler/tracker/crawl"
+	"github.com/tc-teams/fakefinder-crawler/tracker/crawler"
 )
 
 // Hit is a structure used for serializing/deserializing data in Elasticsearch.
 type Data struct {
 	Version string              `json:"version,omitempty"`
-	News    crawl.RelatedNews   `json:"fields"`
+	News    crawler.RelatedNews `json:"fields"`
 	Message string              `json:"message,omitempty"`
 	Time    timestamp.Timestamp `json:"time,omitempty"`
 }

@@ -1,9 +1,9 @@
-package crawl
+package crawler
 
 import "time"
 
 const (
-	G1         = "g1.globo.com"
+	GB         = "g1.globo.com"
 	Folha      = "www1.folha.uol.com.br"
 	Uol        = "noticias.uol.com.br"
 	StartFolha = "https://www1.folha.uol.com.br/cotidiano/coronavirus/"
@@ -22,3 +22,7 @@ type RelatedNews struct {
 	Body     string    `json:"Body"`
 	msg      string    `json:"msg,omitempty"`
 }
+
+var (
+	stop = bool(false)
+)

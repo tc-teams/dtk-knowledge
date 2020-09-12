@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -29,6 +30,9 @@ func (c ContextRoute) ServeHTTP(w http.ResponseWriter, r *http.Request){
 
 	err := c.api.Middleware.ChainMiddleware(c.Handler)(w,r,log)
 	if err != nil {
+		log.WithFields(logrus.Fields{
+			"Error": err.Error,
+		}).Error()
 		http.Error(w, err.Message,err.Code)
 	}
 

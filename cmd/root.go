@@ -7,6 +7,10 @@ import (
 	"os"
 )
 
+var (
+	configFileFlag string
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "Finder",
 	Short: "A brief description of your application",
@@ -21,18 +25,19 @@ func Execute() {
 }
 func init() {
 	cobra.OnInitialize(config)
+	// Cobra supports persistent flags, which, if defined here,
+	// will be global for your application.
+	rootCmd.Flags().StringVarP(&configFileFlag, "config", "f", "./config.yaml", "The path to the config file to use.")
+	_ = viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
+
 }
 
 func config() {
+
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./")
 
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			fmt.Println("Config file not found; ignore error if desired")
-		} else {
-			fmt.Println("Config file was found but another error was produced")
-		}
 	}
 
 }
