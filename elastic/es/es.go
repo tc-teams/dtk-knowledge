@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-
 type Elastic struct {
 	*elastic.Client
 	ctx context.Context
@@ -21,20 +20,12 @@ func (e *Elastic) MatchQueryByIndex(description string) ([]Data, error) {
 	var source []Data
 
 	searchSource := elastic.NewSearchSource()
-	searchSource.Query(elastic.NewMatchQuery(Fields,description))
+	searchSource.Query(elastic.NewMatchQuery(Fields, description))
 
-	query, err := searchSource.Source()
+	_, err := searchSource.Source()
 	if err != nil {
 		return nil, err
 	}
-	queryJSON, err := json.Marshal(query)
-	if err != nil {
-		return nil, err
-	}
-
-	log.WithFields(log.Fields{
-		"query": queryJSON,
-	}).Info(queryJSON)
 
 	searchService := e.Search().
 		Index(Index).
@@ -67,22 +58,19 @@ func (e *Elastic) MatchQueryByIndex(description string) ([]Data, error) {
 	return source, nil
 }
 
-func (e *Elastic) EspecifiedValeus() {
-
-	// Get tweet with specified ID
+func (e *Elastic) EspecifiedValues(value string) error {
 	get1, err := e.Get().
-		Index("logstash").
-		Id("oSrSUnQBztIBJVw8hkmj").
+		Index(Index).
+		Id(value).
 		Do(e.ctx)
 	if err != nil {
-		// Handle error
-		panic(err)
+		return err
 	}
 	if get1.Found {
 		var hits Data
 		err := json.Unmarshal(get1.Source, &hits)
 		if err != nil {
-			fmt.Println("nao foi possivel fazer a conversao")
+			return err
 		}
 		fmt.Printf("Got document %s", hits)
 	}
@@ -134,7 +122,6 @@ func (e *Elastic) Index(ctx context.Context, index string, body interface{}) (st
 
 //NewInstanceElastic return a crawler instance client
 func NewInstanceElastic(url string, user string, password string) (*Elastic, error) {
-
 
 	client, err := elastic.NewClient(elastic.SetURL(url), elastic.SetBasicAuth(user, password))
 	if err != nil {
