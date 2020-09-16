@@ -16,5 +16,5 @@ type Data struct {
 
 var (
 	Fields = "fields.Title"
-	Index  = "filebeat-7.7.0-2020.09.12"
+	Index  = "fakefinder"
 )
