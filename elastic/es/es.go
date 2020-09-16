@@ -74,6 +74,7 @@ func (e *Elastic) EspecifiedValues(value string) error {
 		}
 		fmt.Printf("Got document %s", hits)
 	}
+	return nil
 }
 
 func (e *Elastic) Version(url string) (bool, error) {

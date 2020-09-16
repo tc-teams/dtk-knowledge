@@ -2,8 +2,10 @@ package crawler
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
+	"github.com/tc-teams/fakefinder-crawler/api"
 	ctx "github.com/tc-teams/fakefinder-crawler/context/validator"
 	"regexp"
 	"time"
@@ -17,6 +19,7 @@ type G1 struct {
 	Colly     *colly.Collector
 	News      []RelatedNews
 	validator *ctx.Validation
+	Log      *api.Logging
 }
 
 //LoadNews returns related crawler by an entry
@@ -67,9 +70,6 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 			return
 		}
 		g.News = append(g.News, detailsNews)
-		if len(g.News) == 2 {
-			stop = true
-		}
 		detailsNews.Body = ""
 
 	})
@@ -80,17 +80,18 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 	g.Colly.Wait()
 
 }
-func (g *G1) LoggingDocuments() error {
+func (g *G1) LoggingDocuments(log *api.Logging) error {
+
 	if g.News == nil {
 		return errors.New("error to search data in G1")
 
 	}
+	space := regexp.MustCompile(`\s+`)
+
 	for index, news := range g.News {
-
-		space := regexp.MustCompile(`\s+`)
 		s := space.ReplaceAllString(news.Body, " ")
-
-		logrus.WithFields(logrus.Fields{
+		fmt.Println("ola")
+		log.WithFields(logrus.Fields{
 			"Url":      news.Url,
 			"Date":     news.Time,
 			"Title":    news.Title,

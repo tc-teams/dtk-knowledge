@@ -3,24 +3,22 @@ package external
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 const (
-	BaseURL = "http://languages:5000/document"
+	BaseURL = "http://35.193.7.192:8080"
 )
 
 type Client struct {
 	*http.Client
 }
 
-func (c *Client) Request(r *BotRequest) (BotRequest, error) {
+func (c *Client) Request(r *PlnRequest) (*http.Response, error) {
 	reqBytes, err := json.Marshal(r)
 
 	if err != nil {
-		return BotRequest{},err
+		return nil, err
 	}
 	request, err := http.NewRequest(
 		http.MethodPost,
@@ -30,33 +28,32 @@ func (c *Client) Request(r *BotRequest) (BotRequest, error) {
 	request.Header.Set("Accept", "application/json; charset=utf-8")
 
 	if err != nil {
-		return BotRequest{},err
+		return nil, err
 	}
 	resp, err := c.Client.Do(request)
 	if err != nil {
-		return BotRequest{},  err
+		return nil, err
 	}
 
-	defer resp.Body.Close()
+	//defer resp.Body.Close()
+	//
+	//body, err := ioutil.ReadAll(resp.Body)
+	//if err != nil {
+	//	return  nil, err
+	//}
+	//var response BotResponse
+	//if err := json.Unmarshal(body, &response); err != nil {
+	//	return  nil,err
+	//
+	//}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return BotRequest{}, err
-	}
-	var response BotRequest
-	if err := json.Unmarshal(body, &response); err != nil {
-		return BotRequest{},err
-
-	}
-
-	return response, nil
+	return resp, nil
 }
 
 //NewClient return a new client instance
 func NewClient() *Client {
 	return &Client{
 		&http.Client{
-			Timeout: time.Minute,
 		},
 	}
 }

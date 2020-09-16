@@ -13,12 +13,8 @@ type Data struct {
 	Time    timestamp.Timestamp `json:"time,omitempty"`
 }
 
-type Info struct {
-	Description string `json:"description"`
-}
-
 
 var (
 	Fields = "fields.Title"
-	Index  = "filebeat-7.7.0-2020.09.07"
+	Index  = "filebeat-7.7.0-2020.09.12"
 )

@@ -10,15 +10,13 @@ import (
 	"sync"
 )
 
-var esurl = "http://localhost:8080"
-
 type API struct {
 	Client     *server.Client
 	Router     *mux.Router
 	Routes     *Route
 	Middleware *Middleware
 	context    context.Context
-	logging   *Logging
+	logging    *Logging
 }
 
 func (a *API) Serve() error {
@@ -57,7 +55,6 @@ func NewContextApi() (*API, error) {
 		Middleware: newMiddlewareContext(),
 		Router:     mux.NewRouter().StrictSlash(true),
 		context:    context.Background(),
-		logging: NewLog(),
-
+		logging:    NewLog(),
 	}, nil
 }

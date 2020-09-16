@@ -2,15 +2,12 @@ package crawler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	"github.com/tc-teams/fakefinder-crawler/elastic"
-	"github.com/tc-teams/fakefinder-crawler/elastic/es"
 	"github.com/tc-teams/fakefinder-crawler/external"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
-	"time"
 )
 
 const routerName = "crawler"
@@ -35,7 +32,8 @@ func Init() *api.Route {
 
 func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Logging) *api.BaseError {
 
-	err := tracker.WebCrawlerNews()
+
+	err := tracker.WebCrawlerNews(log)
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
@@ -47,18 +45,14 @@ func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Lo
 		"WebCrawler": "Search news success",
 	}).Info()
 
-	return &api.BaseError{
-		Error:   nil,
-		Message: "OK",
-		Code:    http.StatusOK,
-	}
-
+	w.Write([]byte("Search news success"))
+	w.WriteHeader(http.StatusOK)
+	return nil
 }
-
 
 func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.Logging) *api.BaseError {
 
-	var info es.Info
+	var info external.BotRequest
 
 	err := json.NewDecoder(r.Body).Decode(&info)
 	if err != nil {
@@ -86,38 +80,58 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.
 		}
 
 	}
-	reqBody := &external.BotRequest{
+	reqBody := &external.PlnRequest{
 		Description: info.Description,
 	}
 
 	for _, related := range documents {
-		reqBody.Related = append(reqBody.Related, related.News.Body)
-	}
-	fmt.Println("quantidade:",len(reqBody.Related))
-	time.Sleep(10*time.Second)
-
-
-	for q, i := range reqBody.Related{
-		fmt.Printf("Documents%s: %s",q,i)
-
+		reqBody.News = append(reqBody.News, related.News.Body)
 	}
 
-
-
-	//related, err := external.NewClient().Request(reqBody)
-	//if err != nil {
-	//	return &api.BaseError{
-	//		Error:   err,
-	//		Message: "error request a external service",
-	//		Code:    http.StatusBadGateway,
-	//	}
-	//}
-	//fmt.Println(related)
-
-	return &api.BaseError{
-		Error:   nil,
-		Message: "OK",
-		Code:    http.StatusOK,
+	response, err := external.NewClient().Request(reqBody)
+	if err != nil {
+		return &api.BaseError{
+			Error:   err,
+			Message: "error request a external service",
+			Code:    http.StatusBadGateway,
+		}
 	}
+	defer response.Body.Close()
+
+	var pln external.PlnResponse
+
+	err = json.NewDecoder(response.Body).Decode(&pln)
+	if err != nil {
+		return &api.BaseError{
+			Error:   err,
+			Message: "Invalid request body pln",
+			Code:    http.StatusBadRequest,
+		}
+	}
+
+	var bot external.BotResponse
+	bot.Description = info.Description
+	for _, j := range documents {
+		var text external.TextResult
+
+		if body := pln.PlnProcess[j.News.Body]; body != "" {
+			text.Similarity = body
+			text.Link = j.News.Url
+			text.Title = j.News.Title
+			text.Date = j.News.Time
+			bot.Text = append(bot.Text, text)
+
+		}
+
+	}
+
+	log.WithFields(logrus.Fields{
+		"pln": "external process successfully completed",
+	}).Info()
+
+	bytes, err := json.Marshal(bot)
+	w.Write(bytes)
+
+	return nil
 
 }
