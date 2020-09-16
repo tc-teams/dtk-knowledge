@@ -22,7 +22,7 @@ func Init() *api.Route {
 		Handler: CrawlNewsRelatedToCovid,
 	}, &api.ContextRoute{
 		Method:  http.MethodPost,
-		Path:    "/teste",
+		Path:    "/search/news",
 		Handler: ElasticCrawlByDescription,
 	},
 	)

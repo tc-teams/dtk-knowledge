@@ -7,10 +7,17 @@
 go build .
 go run main.go server 
 ```
-### Teste
+### Exemplo
 ```
-curl -H "Content-Type: application/json" -d '{"description":"something"}' http://localhost:8000/teste
+request:
+curl -H "Content-Type: application/json" -d '{"description":"Anvisa recebe informações oficiais para avaliar retomada de testes da vacina de Oxford para Covid-19"}' http://localhost:8000/search/news
 
+response: 
+{"description":"Anvisa recebe informações oficiais para avaliar retomada de testes da vacina de Oxford para Covid-19",
+"text":[{"date":"2020-09-12T20:38:51Z",
+"title":"Anvisa recebe informações oficiais para avaliar retomada de testes da vacina de Oxford para Covid-19",
+"similarity":"0.08620689655172414",
+"link":"https://g1.globo.com/economia/noticia/2020/09/12/candidato-de-trump-e-eleito-para-comandar-bid.ghtml"}]}
 ```
 ### Template Application 
 ![Tamplete](https://drstearns.github.io/tutorials/gomiddleware/img/flow.png)
