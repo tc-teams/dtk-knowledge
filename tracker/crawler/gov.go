@@ -91,7 +91,7 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 func (g *GOV) LoggingDocuments(log *api.Logging) error {
 
 	if g.News == nil {
-		return errors.New("error to search data in G1")
+		return errors.New("error to search data in GOV")
 
 	}
 	space := regexp.MustCompile(`\s+`)
