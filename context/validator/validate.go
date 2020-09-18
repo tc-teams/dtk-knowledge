@@ -22,12 +22,12 @@ func NewValidate() *Validation {
 }
 
 //ValidateStruct V
-func (v Validation) ValidateStruct(generic interface{}) error {
+func (v Validation) ValidateStruct(generic interface{})(bool, error) {
 	err := v.Validate.Struct(generic)
 	if err != nil {
-		return err
+		return false,err
 
 	}
-	return nil
+	return true, nil
 
 }

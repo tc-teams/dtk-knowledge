@@ -10,7 +10,7 @@ go run main.go server
 ### Exemplo
 ```
 request:
-curl -H "Content-Type: application/json" -d '{"description":"Anvisa recebe informações oficiais para avaliar retomada de testes da vacina de Oxford para Covid-19"}' http://localhost:8000/search/news
+curl -H "Content-Type: application/json" -d '{"description":"Anvisa recebe informações oficiais para avaliar retomada de testes da vacina de Oxford para Covid-19"}' http://localhost:8080/search/news
 
 response: 
 {"description":"Anvisa recebe informações oficiais para avaliar retomada de testes da vacina de Oxford para Covid-19",

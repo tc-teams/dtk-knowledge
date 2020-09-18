@@ -130,8 +130,16 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.
 	}).Info()
 
 	bytes, err := json.Marshal(bot)
-	w.Write(bytes)
+	if err != nil {
+		return &api.BaseError{
+			Error:   err,
+			Message: "Was not possible to convert bot crawler response",
+			Code:   http.StatusBadRequest,
+		}
+	}
 
+	w.Write(bytes)
+	w.WriteHeader(http.StatusOK)
 	return nil
 
 }
