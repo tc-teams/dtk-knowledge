@@ -3,8 +3,10 @@ package es
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/olivere/elastic/v7"
+	wrap "github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )
@@ -126,8 +128,9 @@ func NewInstanceElastic(url string, user string, password string) (*Elastic, err
 
 	client, err := elastic.NewClient(elastic.SetURL(url), elastic.SetBasicAuth(user, password))
 	if err != nil {
-		fmt.Println("erro na autenticação", err)
-		return nil, err
+		errAuth := errors.New("authentication failure")
+
+		return nil, wrap.Wrap(err, errAuth.Error())
 	}
 	return &Elastic{client, context.Background()}, nil
 }

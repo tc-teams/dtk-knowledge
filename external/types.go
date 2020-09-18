@@ -1,6 +1,8 @@
 package external
 
-import "time"
+import (
+	"time"
+)
 
 type PlnRequest struct {
 	Description string   `json:"description"`

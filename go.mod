@@ -18,6 +18,7 @@ require (
 	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/olivere/elastic/v7 v7.0.20
 	github.com/pelletier/go-toml v1.8.0 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/afero v1.3.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

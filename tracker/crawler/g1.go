@@ -2,7 +2,6 @@ package crawler
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
@@ -30,7 +29,7 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 	g.Colly.OnHTML("#bstn-launcher a[href]", func(e *colly.HTMLElement) {
 		if !stop {
 			e.Request.Visit(e.Attr("href"))
-			}
+		}
 
 	})
 
@@ -97,10 +96,6 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 
 	g.Colly.Visit(StartG1)
 	g.Colly.Wait()
-	for index, i := range g.News {
-		fmt.Printf("index:%v , recurso: %v, url: %v", index, i.Title, i.Url)
-		fmt.Println()
-	}
 
 }
 func (g *G1) LoggingDocuments(log *api.Logging) error {

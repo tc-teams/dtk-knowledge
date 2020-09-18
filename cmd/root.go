@@ -25,10 +25,6 @@ func Execute() {
 }
 func init() {
 	cobra.OnInitialize(config)
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-	rootCmd.Flags().StringVarP(&configFileFlag, "config", "f", "./config.yaml", "The path to the config file to use.")
-	_ = viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 
 }
 
