@@ -11,65 +11,48 @@ import (
 	"time"
 )
 
-var(
-	G1stop      = false
-)
 
-type G1 struct {
+type GOV struct {
 	Colly     *colly.Collector
 	News      []RelatedNews
 	validator *ctx.Validation
 	Log       *api.Logging
 }
+var(
+	Govstop      = false
+)
 
 //LoadNews returns related crawler by an entry
-func (g *G1) TrackNewsBasedOnCovid19() {
+func (g *GOV) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
-	g.Colly.OnHTML("#bstn-launcher a[href]", func(e *colly.HTMLElement) {
-		if !G1stop {
+	//#content .cat-items .tile-list-1 .tileItem
+	g.Colly.OnHTML(".category-listnoticias a[href] ", func(e *colly.HTMLElement) {
+		if !Govstop {
 			e.Request.Visit(e.Attr("href"))
 		}
 
 	})
 
-	g.Colly.OnHTML("head", func(e *colly.HTMLElement) {
-
-		e.ForEach("meta", func(_ int, el *colly.HTMLElement) {
-			switch el.Attr("property") {
-			case "og:title":
-				detailsNews.Title = el.Attr("content")
-			case "og:description":
-				detailsNews.Subtitle = el.Attr("content")
-			}
-		})
+	g.Colly.OnHTML("title", func(e *colly.HTMLElement) {
+		detailsNews.Title = e.Text
 
 	})
-	g.Colly.OnHTML("main", func(e *colly.HTMLElement) {
-		e.ForEach(".content-text__container", func(_ int, el *colly.HTMLElement) {
+	g.Colly.OnHTML(".item-pagenoticias", func(e *colly.HTMLElement) {
+		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
 			text := el.Text
 			detailsNews.Body += text
 
 		})
 
 	})
-	g.Colly.OnHTML("time", func(e *colly.HTMLElement) {
+	g.Colly.OnHTML(".documentPublished", func(e *colly.HTMLElement) {
+		data := strings.Split(e.Text,",")
 
-		//time, err := time.Parse(time.RFC3339, e.Attr("datetime"))
-		//if err != nil {
-		//	logrus.WithFields(logrus.Fields{
-		//		"Date": time,
-		//	}).Info("Was not possible convert string to Date")
-		//
-		//}
-		var data string
-		switch e.Attr("itemprop") {
-		case "datePublished":
-			data = e.Text
+		if detailsNews.Date == strEmpty{
+			detailsNews.Date = data[1]
 		}
-		if detailsNews.Date == strEmpty {
-			detailsNews.Date = data
-		}
+
 		hasNotice, err := g.validator.ValidateStruct(detailsNews)
 
 		if err != nil {
@@ -89,8 +72,9 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 			g.News = append(g.News, detailsNews)
 		}
 
+
 		if len(g.News) == 2 {
-			G1stop = true
+			Govstop = true
 			return
 		}
 		detailsNews = RelatedNews{}
@@ -99,11 +83,12 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 
 	g.Colly.Limit(&colly.LimitRule{RandomDelay: 1 * time.Second})
 
-	g.Colly.Visit(StartG1)
+	g.Colly.Visit(StartGV)
 	g.Colly.Wait()
 
+
 }
-func (g *G1) LoggingDocuments(log *api.Logging) error {
+func (g *GOV) LoggingDocuments(log *api.Logging) error {
 
 	if g.News == nil {
 		return errors.New("error to search data in G1")
@@ -126,10 +111,10 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 }
 
 //NewG1 return crawler  instance of colly
-func NewG1() Crawler {
-	return &G1{
-		Colly: colly.NewCollector(colly.AllowedDomains(GB), colly.URLFilters(
-			regexp.MustCompile(FilterGB),
+func NewGov() Crawler {
+	return &GOV{
+		Colly: colly.NewCollector(colly.AllowedDomains(GV), colly.URLFilters(
+			regexp.MustCompile(FilterGV),
 		)),
 		News:      []RelatedNews{},
 		validator: ctx.NewValidate(),
