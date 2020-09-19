@@ -16,6 +16,7 @@ const (
 	StartG1    = "https://g1.globo.com/bemestar/coronavirus/"
 	StartUol   = "https://noticias.uol.com.br/coronavirus/"
 	StartGV = "https://www.saude.gov.br/fakenews/"
+	StartFatoOuFake = ""
 
 	FilterGB = "https://g1.globo\\.com/(bemestar.+)$"
 	FilterGV = "https://www.saude\\.gov\\.br/(fakenews.+)$"
