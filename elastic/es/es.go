@@ -8,7 +8,6 @@ import (
 	"github.com/olivere/elastic/v7"
 	wrap "github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"strings"
 )
 
 type Elastic struct {
@@ -47,9 +46,7 @@ func (e *Elastic) MatchQueryByIndex(description string) ([]Data, error) {
 		if err != nil {
 			return nil, err
 		}
-		if strings.Index(data.News.Title, description) > -1 {
-			source = append(source, data)
-		}
+		source = append(source, data)
 	}
 
 	if err != nil {
@@ -90,7 +87,6 @@ func (e *Elastic) Version(url string) (bool, error) {
 	return true, nil
 }
 
-//TODO remove this method when create a mapping using kibana
 func (e *Elastic) AddIndex(ctx context.Context, index string, body string) (string, error) {
 
 	exists, err := e.Client.IndexExists(index).Do(ctx)
@@ -103,7 +99,6 @@ func (e *Elastic) AddIndex(ctx context.Context, index string, body string) (stri
 			return "", err
 		}
 		if !createIndex.Acknowledged {
-			// Not acknowledged
 		}
 	}
 	return "", nil

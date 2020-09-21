@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-var(
-	G1stop      = false
+var (
+	G1stop = false
 )
 
 type G1 struct {
@@ -111,7 +111,7 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 	}
 	space := regexp.MustCompile(`\s+`)
 
-	for index, news := range g.News {
+	for _, news := range g.News {
 		s := space.ReplaceAllString(news.Body, " ")
 		log.WithFields(logrus.Fields{
 			"Url":      news.Url,
@@ -119,7 +119,8 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 			"Title":    strings.ToLower(news.Title),
 			"SubTitle": news.Subtitle,
 			"Body":     s,
-		}).Info("News related:", index)
+			"From":     GB,
+		}).Info()
 
 	}
 	return nil

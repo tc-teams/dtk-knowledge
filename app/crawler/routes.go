@@ -2,10 +2,12 @@ package crawler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	"github.com/tc-teams/fakefinder-crawler/elastic"
 	"github.com/tc-teams/fakefinder-crawler/external"
+	"github.com/tc-teams/fakefinder-crawler/nlp"
 	"github.com/tc-teams/fakefinder-crawler/tracker"
 	"net/http"
 )
@@ -103,36 +105,24 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.
 	if err != nil {
 		return &api.BaseError{
 			Error:   err,
-			Message: "Invalid request body pln",
+			Message: "Invalid request body nlp",
 			Code:    http.StatusBadRequest,
 		}
 	}
 
-	var bot external.BotResponse
-	bot.Description = info.Description
-	for _, j := range documents {
-		var text external.TextResult
+	bot := nlp.NaturalLanguageProcess(pln,documents,info.Description)
 
-		if body := pln.PlnProcess[j.News.Body]; body != empty {
-			text.Similarity = body
-			text.Link = j.News.Url
-			text.Title = j.News.Title
-			text.Date = j.News.Time
-			bot.Text = append(bot.Text, text)
-
-		}
-
-	}
 
 	log.WithFields(logrus.Fields{
-		"pln": "external process successfully completed",
+		"nlp": "external process successfully completed",
 	}).Info()
 
 	err = json.NewEncoder(w).Encode(bot)
 	if err != nil {
+		errInvalidEncode := errors.New("was not possible enconde response body")
 		return &api.BaseError{
 			Error:   err,
-			Message: "Was not possible to encode bot crawler response",
+			Message: errInvalidEncode.Error(),
 			Code:    http.StatusBadRequest,
 		}
 	}

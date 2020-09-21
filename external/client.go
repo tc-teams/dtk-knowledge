@@ -3,6 +3,8 @@ package external
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	wrap "github.com/pkg/errors"
 	"net/http"
 	"os"
 )
@@ -12,15 +14,19 @@ type Client struct {
 }
 
 func (c *Client) Request(r *PlnRequest) (*http.Response, error) {
-	reqBytes, err := json.Marshal(r)
 
+	reqBytes := new(bytes.Buffer)
+	err := json.NewEncoder(reqBytes).Encode(r)
 	if err != nil {
-		return nil, err
+		errInvalidEncode := errors.New("was not possible enconde response body")
+		return nil, wrap.Wrap(err, errInvalidEncode.Error())
+
 	}
+
 	request, err := http.NewRequest(
 		http.MethodPost,
 		os.Getenv("PLN_URL"),
-		bytes.NewBuffer(reqBytes),
+		reqBytes,
 	)
 	request.Header.Set("Accept", "application/json; charset=utf-8")
 

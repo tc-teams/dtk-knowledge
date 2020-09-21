@@ -11,15 +11,15 @@ import (
 	"time"
 )
 
-
 type GOV struct {
 	Colly     *colly.Collector
 	News      []RelatedNews
 	validator *ctx.Validation
 	Log       *api.Logging
 }
-var(
-	Govstop      = false
+
+var (
+	Govstop = false
 )
 
 //LoadNews returns related crawler by an entry
@@ -47,9 +47,9 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 
 	})
 	g.Colly.OnHTML(".documentPublished", func(e *colly.HTMLElement) {
-		data := strings.Split(e.Text,",")
+		data := strings.Split(e.Text, ",")
 
-		if detailsNews.Date == strEmpty{
+		if detailsNews.Date == strEmpty {
 			detailsNews.Date = data[1]
 		}
 
@@ -72,7 +72,6 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 			g.News = append(g.News, detailsNews)
 		}
 
-
 		if len(g.News) == 2 {
 			Govstop = true
 			return
@@ -86,7 +85,6 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 	g.Colly.Visit(StartGV)
 	g.Colly.Wait()
 
-
 }
 func (g *GOV) LoggingDocuments(log *api.Logging) error {
 
@@ -96,7 +94,7 @@ func (g *GOV) LoggingDocuments(log *api.Logging) error {
 	}
 	space := regexp.MustCompile(`\s+`)
 
-	for index, news := range g.News {
+	for _, news := range g.News {
 		s := space.ReplaceAllString(news.Body, " ")
 		log.WithFields(logrus.Fields{
 			"Url":      news.Url,
@@ -104,7 +102,8 @@ func (g *GOV) LoggingDocuments(log *api.Logging) error {
 			"Title":    strings.ToLower(news.Title),
 			"SubTitle": news.Subtitle,
 			"Body":     s,
-		}).Info("News related:", index)
+			"From":     GV,
+		}).Info()
 
 	}
 	return nil

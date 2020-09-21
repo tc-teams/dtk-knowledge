@@ -7,6 +7,15 @@
 go build .
 go run main.go server 
 ```
+
+### Docker 
+```
+docker build -t gcloud/fakefinder-crawler:1.0.0 .
+docker run --name  app -d --network fakefinderstack_elk -p 8080:8080 --env PLN_URL={{ENV}} -t gcloud/fakefinder-crawler:1.0.0
+docker logs bot --follow
+
+```
+
 ### Exemplo
 ```
 request:
