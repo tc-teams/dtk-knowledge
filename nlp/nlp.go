@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-func NaturalLanguageProcess(pln external.PlnResponse, documents []es.Data, description string) external.BotResponse {
+func NaturalLanguageProcess(pln external.PlnResponse, documents []es.Data) external.BotResponse {
 
 	var (
 		values  = map[float64]string{}
@@ -28,7 +28,7 @@ func NaturalLanguageProcess(pln external.PlnResponse, documents []es.Data, descr
 	}
 
 	var bot external.BotResponse
-	bot.Description = description
+	bot.Description = pln.Description
 	for _, j := range documents {
 		var text external.TextResult
 

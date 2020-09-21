@@ -110,7 +110,7 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.
 		}
 	}
 
-	bot := nlp.NaturalLanguageProcess(pln,documents,info.Description)
+	bot := nlp.NaturalLanguageProcess(pln,documents)
 
 
 	log.WithFields(logrus.Fields{
