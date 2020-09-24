@@ -11,7 +11,7 @@ type PlnRequest struct {
 
 type PlnResponse struct {
 	Description string            `json:"description"`
-	PlnProcess  map[string]float64 `json:"nlp-process"`
+	PlnProcess  map[string]float64 `json:"pln-process"`
 }
 
 type BotRequest struct {
@@ -25,6 +25,6 @@ type BotResponse struct {
 type TextResult struct {
 	Date       time.Time `json:"date"`
 	Title      string    `json:"title"`
-	Similarity float64    `json:"similarity,omitempty"`
+	Similarity float64   `json:"similarity,omitempty"`
 	Link       string    `json:"link"`
 }

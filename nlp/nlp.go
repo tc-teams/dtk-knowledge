@@ -3,10 +3,12 @@ package nlp
 import (
 	"github.com/tc-teams/fakefinder-crawler/elastic/es"
 	"github.com/tc-teams/fakefinder-crawler/external"
+
 	"sort"
 )
 
 func NaturalLanguageProcess(pln external.PlnResponse, documents []es.Data) external.BotResponse {
+
 
 	var (
 		values  = map[float64]string{}
@@ -42,6 +44,7 @@ func NaturalLanguageProcess(pln external.PlnResponse, documents []es.Data) exter
 		}
 
 	}
+
 
 	return bot
 

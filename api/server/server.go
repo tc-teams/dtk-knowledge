@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -18,7 +18,7 @@ func( s * Client) addr()string{
 	return s.Addr
 }
 func(s *Client) Serve(c context.Context, handler http.Handler){
-	logrus.WithFields(logrus.Fields{"Server":"Create a sample server at port : %s"}).Debug(s.addr())
+	fmt.Printf("Create a sample server at port %s",s.addr())
 	s.Handler = handler
 	s.ListenAndServe()
 }
