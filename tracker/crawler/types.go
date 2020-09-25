@@ -5,22 +5,28 @@ import (
 )
 
 const (
-	GB         = "g1.globo.com"
-	Folha      = "www1.folha.uol.com.br"
-	Uol        = "noticias.uol.com.br"
-	GV       = "www.saude.gov.br"
+	GB      = "g1.globo.com"
+	GV      = "www.saude.gov.br"
+	BBC     = "www.bbc.com"
+	UolNews = "noticias.uol.com.br"
 
+	StartG1         = "https://g1.globo.com/bemestar/coronavirus/"
+	StartGV         = "https://www.saude.gov.br/fakenews/"
+	StartFatoOuFake = "https://g1.globo.com/fato-ou-fake/coronavirus/"
+	StartBBCNews    = "https://www.bbc.com/portuguese/topics/clmq8rgyyvjt"
+	StartUol        = "https://noticias.uol.com.br/coronavirus"
 
-
-	StartFolha = "https://www1.folha.uol.com.br/cotidiano/coronavirus/"
-	StartG1    = "https://g1.globo.com/bemestar/coronavirus/"
-	StartUol   = "https://noticias.uol.com.br/coronavirus/"
-	StartGV = "https://www.saude.gov.br/fakenews/"
-	StartFatoOuFake = ""
-
-	FilterGB = "https://g1.globo\\.com/(bemestar.+)$"
-	FilterGV = "https://www.saude\\.gov\\.br/(fakenews.+)$"
+	FilterGB  = "https://g1.globo\\.com/(bemestar.+)$"
+	FilterFF  = "https://g1\\.globo\\.com/fato-ou-fake/(coronavirus.+)$"
+	FilterGV  = "https://www.saude\\.gov\\.br/(fakenews.+)$"
+	FilterBBC = "https://www\\.bbc\\.com/(portuguese.+)$"
 )
+
+var nl = []string{"coronavirus", "covid-19", "pandemia", "sars-cov-2",
+	"cloroquina", "corona", "virus", "vírus",
+	"vacina", "coronavac", "máscara", "coronavírus", "achatar a curva", "assintomático", "Autoisolamento", "caso suspeito",
+	"distância social", "epidemia", "estado de calamidade", "grupo de risco", "paciente zero", "período de incubação", "quarentena",
+	"taxa de transmissão", "teste rt-pcr", "transmissão comunitária ou sustentável"}
 
 //RelatedNews is used to describe article model.
 type RelatedNews struct {
@@ -32,7 +38,6 @@ type RelatedNews struct {
 	Body     string    `validator:"required"`
 	Msg      string    `json:"msg"`
 }
-
 
 var (
 	strEmpty = string("")
