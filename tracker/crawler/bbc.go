@@ -90,7 +90,7 @@ func (b *BBCNews) TrackNewsBasedOnCovid19() {
 			b.News = append(b.News, detailsNews)
 		}
 
-		if len(b.News) == 2 {
+		if len(b.News) == 20 {
 			BBCstop = true
 			return
 		}
@@ -141,6 +141,9 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     BBC,
 		}).Info()
+		if index == 20{
+			break
+		}
 
 	}
 	return nil

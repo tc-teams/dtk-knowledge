@@ -92,7 +92,7 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 			g.News = append(g.News, detailsNews)
 		}
 
-		if len(g.News) == 2 {
+		if len(g.News) == 20 {
 			G1stop = true
 			return
 		}
@@ -143,6 +143,9 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 				"Body":     docs.Text[index],
 				"From":     GB,
 			}).Info()
+			if index == 20{
+				break
+			}
 		}
 
 	return nil

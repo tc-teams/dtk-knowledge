@@ -92,7 +92,7 @@ func (f *FatoOuFake) TrackNewsBasedOnCovid19() {
 			f.News = append(f.News, detailsNews)
 		}
 
-		if len(f.News) == 2 {
+		if len(f.News) == 20 {
 			FFstop = true
 			return
 		}
@@ -143,6 +143,9 @@ func (f *FatoOuFake) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     GB,
 		}).Info()
+		if index == 20{
+			break
+		}
 
 	}
 	return nil

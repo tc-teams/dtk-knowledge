@@ -103,7 +103,7 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 			u.News = append(u.News, detailsNews)
 		}
 
-		if len(u.News) == 2 {
+		if len(u.News) == 20 {
 			UOLstop = true
 			return
 		}
@@ -153,6 +153,9 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     UolNews,
 		}).Info()
+		if index == 20{
+			break
+		}
 
 	}
 	return nil
