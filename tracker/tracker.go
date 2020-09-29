@@ -10,27 +10,28 @@ func WebCrawlerNews(log *api.Logging) error {
 
 	g1 := crawler.NewG1()
 
-	log.WithFields(logrus.Fields{"page": crawler.StartG1}).Debug("starting synchronization")
+	log.WithFields(logrus.Fields{"page": crawler.StartG1}).Info("starting synchronization")
 	g1.TrackNewsBasedOnCovid19()
-	log.WithFields(logrus.Fields{"page": crawler.StartG1}).Debug("synchronization finished")
+	log.WithFields(logrus.Fields{"page": crawler.StartG1}).Info("synchronization finished")
 
 	if err := g1.LoggingDocuments(log); err != nil {
 		return err
 	}
 
-	gv := crawler.NewGov()
+	//gv := crawler.NewGov()
+	//
+	//log.WithFields(logrus.Fields{"page": crawler.StartGV}).Info("starting synchronization")
+	//gv.TrackNewsBasedOnCovid19()
+	//log.WithFields(logrus.Fields{"page": crawler.StartGV}).Info("synchronization finished")
+	//
+	//if err := gv.LoggingDocuments(log); err != nil {
+	//	return err
+	//}
 
-	log.WithFields(logrus.Fields{"page": crawler.StartGV}).Debug("starting synchronization")
-	gv.TrackNewsBasedOnCovid19()
-	log.WithFields(logrus.Fields{"page": crawler.StartGV}).Debug("synchronization finished")
-
-	if err := gv.LoggingDocuments(log); err != nil {
-		return err
-	}
 	ff := crawler.NewFatoOuFake()
-	log.WithFields(logrus.Fields{"pageF": crawler.StartG1}).Debug("starting synchronization")
+	log.WithFields(logrus.Fields{"pageF": crawler.StartG1}).Info("starting synchronization")
 	ff.TrackNewsBasedOnCovid19()
-	log.WithFields(logrus.Fields{"pageF": crawler.StartG1}).Debug("synchronization finished")
+	log.WithFields(logrus.Fields{"pageF": crawler.StartG1}).Info("synchronization finished")
 
 	if err := ff.LoggingDocuments(log); err != nil {
 		return err
@@ -38,9 +39,9 @@ func WebCrawlerNews(log *api.Logging) error {
 	}
 
 	bbc := crawler.NewBBCNews()
-	log.WithFields(logrus.Fields{"page": crawler.StartBBCNews}).Debug("starting synchronization")
+	log.WithFields(logrus.Fields{"page": crawler.StartBBCNews}).Info("starting synchronization")
 	bbc.TrackNewsBasedOnCovid19()
-	log.WithFields(logrus.Fields{"page": crawler.StartBBCNews}).Debug("synchronization finished")
+	log.WithFields(logrus.Fields{"page": crawler.StartBBCNews}).Info("synchronization finished")
 
 	if err := bbc.LoggingDocuments(log); err != nil {
 		return err
@@ -48,9 +49,9 @@ func WebCrawlerNews(log *api.Logging) error {
 	}
 
 	uol := crawler.NewUol()
-	log.WithFields(logrus.Fields{"page": crawler.StartUol}).Debug("starting synchronization")
+	log.WithFields(logrus.Fields{"page": crawler.StartUol}).Info("starting synchronization")
 	uol.TrackNewsBasedOnCovid19()
-	log.WithFields(logrus.Fields{"page": crawler.StartUol}).Debug("synchronization finished")
+	log.WithFields(logrus.Fields{"page": crawler.StartUol}).Info("synchronization finished")
 
 	if err := uol.LoggingDocuments(log); err != nil {
 		return err

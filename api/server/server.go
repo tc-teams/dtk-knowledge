@@ -18,7 +18,7 @@ func( s * Client) addr()string{
 	return s.Addr
 }
 func(s *Client) Serve(c context.Context, handler http.Handler){
-	fmt.Printf("Create a sample server at port %s",s.addr())
+	fmt.Println("Create a sample server at port %s",s.addr())
 	s.Handler = handler
 	s.ListenAndServe()
 }

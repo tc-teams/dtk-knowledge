@@ -3,6 +3,7 @@ package crawler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
@@ -114,8 +115,9 @@ func (f *FatoOuFake) LoggingDocuments(log *api.Logging) error {
 
 	reqBody := external.ReqDocuments{}
 
-	for _, related := range g.News {
-		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+	for _, related := range f.News {
+		result := fmt.Sprintf("%s %s",related.Body,related.Title)
+		reqBody.Text = append(reqBody.Text,result)
 	}
 
 
@@ -125,6 +127,7 @@ func (f *FatoOuFake) LoggingDocuments(log *api.Logging) error {
 	}
 
 	var docs external.RespDocuments
+	defer req.Body.Close()
 
 	err = json.NewDecoder(req.Body).Decode(&docs)
 	if err != nil {
@@ -147,7 +150,7 @@ func (f *FatoOuFake) LoggingDocuments(log *api.Logging) error {
 
 //NewFatoOuFake return crawler  instance of colly
 func NewFatoOuFake() Crawler {
-	return &G1{
+	return &FatoOuFake{
 		Colly: colly.NewCollector(colly.AllowedDomains(GB), colly.URLFilters(
 			regexp.MustCompile(FilterFF),
 		)),

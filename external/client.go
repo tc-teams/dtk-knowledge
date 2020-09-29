@@ -27,13 +27,14 @@ func (c *Client) Request(r interface{}) (*http.Response, error) {
 
 	switch r.(type) {
 	case ReqDocuments:
-		UrlResult = fmt.Sprintf("%s%s", os.Getenv("PLN_URL"), summary)
+		UrlResult = fmt.Sprintf("%s %s",os.Getenv("PLN_URL"),summary)
 	case PlnRequest:
 		UrlResult = os.Getenv("PLN_URL")
 
 	default:
 		fmt.Println("unknown")
 	}
+	fmt.Println("ulr request:",UrlResult)
 
 	request, err := http.NewRequest(
 		http.MethodPost,
