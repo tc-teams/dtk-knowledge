@@ -3,6 +3,7 @@ package crawler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
@@ -102,7 +103,7 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 			u.News = append(u.News, detailsNews)
 		}
 
-		if len(u.News) == 2 {
+		if len(u.News) == 20 {
 			UOLstop = true
 			return
 		}
@@ -125,7 +126,8 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 	reqBody := external.ReqDocuments{}
 
 	for _, related := range u.News {
-		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+		result := fmt.Sprintf("%s %s",related.Body,related.Title)
+		reqBody.Text = append(reqBody.Text, result)
 	}
 
 
@@ -135,6 +137,7 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 	}
 
 	var docs external.RespDocuments
+	defer req.Body.Close()
 
 	err = json.NewDecoder(req.Body).Decode(&docs)
 	if err != nil {
@@ -150,6 +153,9 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     UolNews,
 		}).Info()
+		if index == 20{
+			break
+		}
 
 	}
 	return nil
@@ -157,7 +163,7 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 
 //NewFatoOuFake return crawler  instance of colly
 func NewUol() Crawler {
-	return &G1{
+	return &Uol{
 		Colly:     colly.NewCollector(colly.AllowedDomains(UolNews)),
 		News:      []RelatedNews{},
 		validator: ctx.NewValidate(),

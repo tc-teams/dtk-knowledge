@@ -47,7 +47,6 @@ func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Lo
 	}).Info()
 
 	w.Write([]byte("Search news success"))
-	w.WriteHeader(http.StatusOK)
 	return nil
 }
 

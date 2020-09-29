@@ -3,6 +3,7 @@ package crawler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
@@ -89,7 +90,7 @@ func (b *BBCNews) TrackNewsBasedOnCovid19() {
 			b.News = append(b.News, detailsNews)
 		}
 
-		if len(b.News) == 2 {
+		if len(b.News) == 20 {
 			BBCstop = true
 			return
 		}
@@ -113,7 +114,8 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 	reqBody := external.ReqDocuments{}
 
 	for _, related := range b.News {
-		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+		result := fmt.Sprintf("%s %s",related.Body,related.Title)
+		reqBody.Text = append(reqBody.Text, result)
 	}
 
 
@@ -123,6 +125,7 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 	}
 
 	var docs external.RespDocuments
+	defer req.Body.Close()
 
 	err = json.NewDecoder(req.Body).Decode(&docs)
 	if err != nil {
@@ -138,6 +141,9 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     BBC,
 		}).Info()
+		if index == 20{
+			break
+		}
 
 	}
 	return nil
@@ -145,7 +151,7 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 
 //NewFatoOuFake return crawler  instance of colly
 func NewBBCNews() Crawler {
-	return &G1{
+	return &BBCNews{
 		Colly: colly.NewCollector(colly.AllowedDomains(BBC), colly.URLFilters(
 			regexp.MustCompile(FilterBBC),
 		)),

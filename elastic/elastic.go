@@ -21,7 +21,7 @@ func DocumentsByDescription(log *api.Logging, description string) ([]es.Data, er
 
 
 	reqBody := external.ReqDocuments{}
-	reqBody.Text[0] = description
+	reqBody.Text = append(reqBody.Text,description)
 
 
 	req, err := external.NewClient().Request(reqBody)
