@@ -4,13 +4,24 @@ import (
 	"time"
 )
 
+type ReqDocuments struct {
+	Text    []string `json:"text"`
+}
+type RespDocuments struct {
+	Text    []string `json:"text"`
+}
+
+var (
+	summary = "summary"
+)
+
 type PlnRequest struct {
 	Description string   `json:"description"`
 	News        []string `json:"news"`
 }
 
 type PlnResponse struct {
-	Description string            `json:"description"`
+	Description string             `json:"description"`
 	PlnProcess  map[string]float64 `json:"pln-process"`
 }
 

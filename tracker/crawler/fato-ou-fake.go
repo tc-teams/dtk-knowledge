@@ -1,11 +1,13 @@
 package crawler
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	ctx "github.com/tc-teams/fakefinder-crawler/context/validator"
+	"github.com/tc-teams/fakefinder-crawler/external"
 	"regexp"
 	"strings"
 	"time"
@@ -109,16 +111,33 @@ func (f *FatoOuFake) LoggingDocuments(log *api.Logging) error {
 		return errors.New("error to search data in Fato-ou-Fake")
 
 	}
-	space := regexp.MustCompile(`\s+`)
 
-	for _, news := range f.News {
-		s := space.ReplaceAllString(news.Body, " ")
+	reqBody := external.ReqDocuments{}
+
+	for _, related := range g.News {
+		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+	}
+
+
+	req, err := external.NewClient().Request(reqBody)
+	if err != nil{
+		return err
+	}
+
+	var docs external.RespDocuments
+
+	err = json.NewDecoder(req.Body).Decode(&docs)
+	if err != nil {
+		return err
+	}
+
+	for index, news := range f.News {
 		log.WithFields(logrus.Fields{
 			"Url":      news.Url,
 			"Date":     news.Date,
 			"Title":    strings.ToLower(news.Title),
 			"SubTitle": news.Subtitle,
-			"Body":     s,
+			"Body":     docs.Text[index],
 			"From":     GB,
 		}).Info()
 

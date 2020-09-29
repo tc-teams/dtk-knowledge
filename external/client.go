@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	wrap "github.com/pkg/errors"
 	"net/http"
 	"os"
@@ -13,7 +14,7 @@ type Client struct {
 	*http.Client
 }
 
-func (c *Client) Request(r *PlnRequest) (*http.Response, error) {
+func (c *Client) Request(r interface{}) (*http.Response, error) {
 
 	reqBytes := new(bytes.Buffer)
 	err := json.NewEncoder(reqBytes).Encode(r)
@@ -22,10 +23,21 @@ func (c *Client) Request(r *PlnRequest) (*http.Response, error) {
 		return nil, wrap.Wrap(err, errInvalidEncode.Error())
 
 	}
+	var UrlResult string
+
+	switch r.(type) {
+	case ReqDocuments:
+		UrlResult = fmt.Sprintf("%s%s", os.Getenv("PLN_URL"), summary)
+	case PlnRequest:
+		UrlResult = os.Getenv("PLN_URL")
+
+	default:
+		fmt.Println("unknown")
+	}
 
 	request, err := http.NewRequest(
 		http.MethodPost,
-		os.Getenv("PLN_URL"),
+		UrlResult,
 		reqBytes,
 	)
 	request.Header.Set("Accept", "application/json; charset=utf-8")

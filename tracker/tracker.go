@@ -26,9 +26,7 @@ func WebCrawlerNews(log *api.Logging) error {
 
 	if err := gv.LoggingDocuments(log); err != nil {
 		return err
-
 	}
-
 	ff := crawler.NewFatoOuFake()
 	log.WithFields(logrus.Fields{"pageF": crawler.StartG1}).Debug("starting synchronization")
 	ff.TrackNewsBasedOnCovid19()
@@ -62,3 +60,4 @@ func WebCrawlerNews(log *api.Logging) error {
 	return nil
 
 }
+
