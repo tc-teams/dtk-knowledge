@@ -1,5 +1,3 @@
 package crawler
 
-type BaseUrl struct {
-	Url      string `json:"Url"`
-}
+var empty = string("")

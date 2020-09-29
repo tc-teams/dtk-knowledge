@@ -1,7 +1,6 @@
-package api
+package validator
 
 import (
-	"errors"
 	"gopkg.in/go-playground/validator.v8"
 )
 
@@ -23,12 +22,12 @@ func NewValidate() *Validation {
 }
 
 //ValidateStruct V
-func (v Validation) ValidateStruct(generic interface{}) (bool, error) {
+func (v Validation) ValidateStruct(generic interface{})(bool, error) {
 	err := v.Validate.Struct(generic)
 	if err != nil {
-		return true, errors.New(err.Error())
+		return false,err
 
 	}
-	return false, nil
+	return true, nil
 
 }

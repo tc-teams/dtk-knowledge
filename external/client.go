@@ -1,42 +1,61 @@
 package external
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	wrap "github.com/pkg/errors"
 	"net/http"
-	"time"
-)
-
-const (
-	BaseURL = "http://languages:5000/document"
+	"os"
 )
 
 type Client struct {
-	BaseURL    string
-	HTTPClient *http.Client
+	*http.Client
 }
 
-func(c *Client) Request(r *http.Request, v interface{}) error{
-    c.RContentType(r)
-	request, err := c.HTTPClient.Do(r)
+func (c *Client) Request(r interface{}) (*http.Response, error) {
+
+	reqBytes := new(bytes.Buffer)
+	err := json.NewEncoder(reqBytes).Encode(r)
 	if err != nil {
-		return err
-	}
-	defer r.Body.Close()
+		errInvalidEncode := errors.New("was not possible enconde response body")
+		return nil, wrap.Wrap(err, errInvalidEncode.Error())
 
-	if request.StatusCode != http.StatusOK {
-		return err
 	}
-	return nil
-}
-func (c * Client) RContentType(r *http.Request) {
-	r.Header.Set("Accept", "application/json; charset=utf-8")
+	var UrlResult string
+
+	switch r.(type) {
+	case ReqDocuments:
+		UrlResult = fmt.Sprintf("%s%s", os.Getenv("PLN_URL"), summary)
+	case PlnRequest:
+		UrlResult = os.Getenv("PLN_URL")
+
+	default:
+		fmt.Println("unknown")
+	}
+
+	request, err := http.NewRequest(
+		http.MethodPost,
+		UrlResult,
+		reqBytes,
+	)
+	request.Header.Set("Accept", "application/json; charset=utf-8")
+
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.Client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 //NewClient return a new client instance
 func NewClient() *Client {
 	return &Client{
-		BaseURL: BaseURL,
-		HTTPClient: &http.Client{
-			Timeout: time.Minute,
-		},
+		&http.Client{},
 	}
 }
