@@ -32,9 +32,9 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 
 	//#content .cat-items .tile-list-1 .tileItem
 	g.Colly.OnHTML(".category-listnoticias a[href] ", func(e *colly.HTMLElement) {
-		if !Govstop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		//if !Govstop {
+		e.Request.Visit(e.Attr("href"))
+		//}
 
 	})
 
@@ -76,10 +76,10 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 			g.News = append(g.News, detailsNews)
 		}
 
-		if len(g.News) == 6 {
-			Govstop = true
-			return
-		}
+		//if len(g.News) == 6 {
+		//	Govstop = true
+		//	return
+		//}
 		detailsNews = RelatedNews{}
 
 	})
@@ -88,6 +88,8 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 
 	g.Colly.Visit(StartGV)
 	g.Colly.Wait()
+	fmt.Println("total de noticia gov", len(g.News))
+
 
 }
 func (g *GOV) LoggingDocuments(log *api.Logging) error {

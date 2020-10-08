@@ -13,7 +13,7 @@ func DocumentsByDescription(log *api.Logging, description string) ([]es.Data, er
 	//User := viper.GetString("User")
 	//Password := viper.GetString("Password")
 
-	es, err := es.NewInstanceElastic("http://elasticsearch:9200", "elastic", "changeme")
+	es, err := es.NewInstanceElastic("http://localhost:9200", "elastic", "changeme")
 	if err != nil {
 		return nil, err
 	}

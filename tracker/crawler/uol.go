@@ -30,9 +30,9 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
 	u.Colly.OnHTML(".flex-wrap a[href]", func(e *colly.HTMLElement) {
-		if !UOLstop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		//if !UOLstop {
+		e.Request.Visit(e.Attr("href"))
+		//}
 
 	})
 
@@ -103,10 +103,10 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 			u.News = append(u.News, detailsNews)
 		}
 
-		if len(u.News) == 20 {
-			UOLstop = true
-			return
-		}
+		//if len(u.News) == 20 {
+		//	UOLstop = true
+		//	return
+		//}
 		detailsNews = RelatedNews{}
 
 	})
@@ -115,6 +115,7 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 
 	u.Colly.Visit(StartUol)
 	u.Colly.Wait()
+	fmt.Println("total de noticia g1", len(u.News))
 
 }
 func (u *Uol) LoggingDocuments(log *api.Logging) error {
@@ -153,9 +154,6 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     UolNews,
 		}).Info()
-		if index == 20{
-			break
-		}
 
 	}
 	return nil

@@ -8,8 +8,7 @@ import (
 
 func WebCrawlerNews(log *api.Logging) error {
 
-	g1 := crawler.NewG1()
-
+	g1:= crawler.NewG1()
 	log.WithFields(logrus.Fields{"page": crawler.StartG1}).Info("starting synchronization")
 	g1.TrackNewsBasedOnCovid19()
 	log.WithFields(logrus.Fields{"page": crawler.StartG1}).Info("synchronization finished")
@@ -19,7 +18,7 @@ func WebCrawlerNews(log *api.Logging) error {
 	}
 
 	//gv := crawler.NewGov()
-	//
+	////
 	//log.WithFields(logrus.Fields{"page": crawler.StartGV}).Info("starting synchronization")
 	//gv.TrackNewsBasedOnCovid19()
 	//log.WithFields(logrus.Fields{"page": crawler.StartGV}).Info("synchronization finished")
@@ -29,6 +28,7 @@ func WebCrawlerNews(log *api.Logging) error {
 	//}
 
 	ff := crawler.NewFatoOuFake()
+
 	log.WithFields(logrus.Fields{"pageF": crawler.StartG1}).Info("starting synchronization")
 	ff.TrackNewsBasedOnCovid19()
 	log.WithFields(logrus.Fields{"pageF": crawler.StartG1}).Info("synchronization finished")
@@ -37,8 +37,7 @@ func WebCrawlerNews(log *api.Logging) error {
 		return err
 
 	}
-
-	bbc := crawler.NewBBCNews()
+	bbc:= crawler.NewBBCNews()
 	log.WithFields(logrus.Fields{"page": crawler.StartBBCNews}).Info("starting synchronization")
 	bbc.TrackNewsBasedOnCovid19()
 	log.WithFields(logrus.Fields{"page": crawler.StartBBCNews}).Info("synchronization finished")
@@ -48,7 +47,7 @@ func WebCrawlerNews(log *api.Logging) error {
 
 	}
 
-	uol := crawler.NewUol()
+	uol:= crawler.NewUol()
 	log.WithFields(logrus.Fields{"page": crawler.StartUol}).Info("starting synchronization")
 	uol.TrackNewsBasedOnCovid19()
 	log.WithFields(logrus.Fields{"page": crawler.StartUol}).Info("synchronization finished")

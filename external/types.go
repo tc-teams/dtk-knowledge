@@ -1,9 +1,5 @@
 package external
 
-import (
-	"time"
-)
-
 type ReqDocuments struct {
 	Text    []string `json:"text"`
 }
@@ -34,7 +30,7 @@ type BotResponse struct {
 	Text        []TextResult `json:"text,omitempty"`
 }
 type TextResult struct {
-	Date       time.Time `json:"date"`
+	Date       string     `json:"date"`
 	Title      string    `json:"title"`
 	Similarity float64   `json:"similarity,omitempty"`
 	Link       string    `json:"link"`
