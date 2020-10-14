@@ -3,6 +3,7 @@ package crawler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
@@ -29,9 +30,9 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
 	g.Colly.OnHTML("#bstn-launcher a[href]", func(e *colly.HTMLElement) {
-		if !G1stop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		//if !G1stop {
+		e.Request.Visit(e.Attr("href"))
+		//}
 
 	})
 
@@ -91,18 +92,19 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 			g.News = append(g.News, detailsNews)
 		}
 
-		if len(g.News) == 2 {
-			G1stop = true
-			return
-		}
+		//if len(g.News) == 20 {
+		//	G1stop = true
+		//	return
+		//}
 		detailsNews = RelatedNews{}
 
 	})
 
-	g.Colly.Limit(&colly.LimitRule{RandomDelay: 1 * time.Second})
+	g.Colly.Limit(&colly.LimitRule{RandomDelay: 20  * time.Second})
 
 	g.Colly.Visit(StartG1)
 	g.Colly.Wait()
+	fmt.Println("total de noticia g1", len(g.News))
 
 }
 func (g *G1) LoggingDocuments(log *api.Logging) error {
@@ -114,8 +116,10 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 	reqBody := external.ReqDocuments{}
 
 	for _, related := range g.News {
-		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+		result := fmt.Sprintf("%s %s",related.Body)
+		reqBody.Text = append(reqBody.Text, result)
 	}
+	fmt.Println("req:",reqBody)
 
 
 	req, err := external.NewClient().Request(reqBody)
@@ -124,6 +128,7 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 	}
 
 	var docs external.RespDocuments
+	defer req.Body.Close()
 
 	err = json.NewDecoder(req.Body).Decode(&docs)
 	if err != nil {
@@ -139,6 +144,7 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 				"Body":     docs.Text[index],
 				"From":     GB,
 			}).Info()
+
 		}
 
 	return nil
@@ -147,7 +153,7 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 //NewG1 return crawler  instance of colly
 func NewG1() Crawler {
 	return &G1{
-		Colly: colly.NewCollector(colly.AllowedDomains(GB), colly.URLFilters(
+		Colly: colly.NewCollector(colly.AllowedDomains(GB),colly.URLFilters(
 			regexp.MustCompile(FilterGB),
 		)),
 		News:      []RelatedNews{},

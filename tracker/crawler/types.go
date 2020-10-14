@@ -11,14 +11,14 @@ const (
 	UolNews = "noticias.uol.com.br"
 
 	StartG1         = "https://g1.globo.com/bemestar/coronavirus/"
-	StartGV         = "https://www.saude.gov.br/fakenews/"
+	//StartGV         = "https://antigo.saude.gov.br/fakenews/"
 	StartFatoOuFake = "https://g1.globo.com/fato-ou-fake/coronavirus/"
 	StartBBCNews    = "https://www.bbc.com/portuguese/topics/clmq8rgyyvjt"
 	StartUol        = "https://noticias.uol.com.br/coronavirus"
 
 	FilterGB  = "https://g1.globo\\.com/(bemestar.+)$"
 	FilterFF  = "https://g1\\.globo\\.com/fato-ou-fake/(coronavirus.+)$"
-	FilterGV  = "https://www.saude\\.gov\\.br/(fakenews.+)$"
+	FilterGV  = "https://antigo.\\saude\\.gov\\.br/(fakenews.+)$"
 	FilterBBC = "https://www\\.bbc\\.com/(portuguese.+)$"
 )
 

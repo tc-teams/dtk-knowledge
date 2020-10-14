@@ -3,6 +3,7 @@ package crawler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
@@ -29,9 +30,9 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
 	u.Colly.OnHTML(".flex-wrap a[href]", func(e *colly.HTMLElement) {
-		if !UOLstop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		//if !UOLstop {
+		e.Request.Visit(e.Attr("href"))
+		//}
 
 	})
 
@@ -102,10 +103,10 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 			u.News = append(u.News, detailsNews)
 		}
 
-		if len(u.News) == 2 {
-			UOLstop = true
-			return
-		}
+		//if len(u.News) == 20 {
+		//	UOLstop = true
+		//	return
+		//}
 		detailsNews = RelatedNews{}
 
 	})
@@ -114,6 +115,7 @@ func (u *Uol) TrackNewsBasedOnCovid19() {
 
 	u.Colly.Visit(StartUol)
 	u.Colly.Wait()
+	fmt.Println("total de noticia g1", len(u.News))
 
 }
 func (u *Uol) LoggingDocuments(log *api.Logging) error {
@@ -125,7 +127,8 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 	reqBody := external.ReqDocuments{}
 
 	for _, related := range u.News {
-		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+		result := fmt.Sprintf("%s %s",related.Body,related.Title)
+		reqBody.Text = append(reqBody.Text, result)
 	}
 
 
@@ -135,6 +138,7 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 	}
 
 	var docs external.RespDocuments
+	defer req.Body.Close()
 
 	err = json.NewDecoder(req.Body).Decode(&docs)
 	if err != nil {
@@ -157,7 +161,7 @@ func (u *Uol) LoggingDocuments(log *api.Logging) error {
 
 //NewFatoOuFake return crawler  instance of colly
 func NewUol() Crawler {
-	return &G1{
+	return &Uol{
 		Colly:     colly.NewCollector(colly.AllowedDomains(UolNews)),
 		News:      []RelatedNews{},
 		validator: ctx.NewValidate(),

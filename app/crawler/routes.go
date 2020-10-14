@@ -47,7 +47,6 @@ func CrawlNewsRelatedToCovid(w http.ResponseWriter, r *http.Request, log *api.Lo
 	}).Info()
 
 	w.Write([]byte("Search news success"))
-	w.WriteHeader(http.StatusOK)
 	return nil
 }
 
@@ -74,8 +73,9 @@ func ElasticCrawlByDescription(w http.ResponseWriter, r *http.Request, log *api.
 	}
 
 	if documents == nil {
+		errNoDataFound := errors.New("No data found")
 		return &api.BaseError{
-			Error:   err,
+			Error:   errNoDataFound,
 			Message: "No data found",
 			Code:    http.StatusNotFound,
 		}

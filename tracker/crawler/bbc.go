@@ -3,6 +3,7 @@ package crawler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
@@ -29,9 +30,9 @@ func (b *BBCNews) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
 	b.Colly.OnHTML(".lx-stream a[href]", func(e *colly.HTMLElement) {
-		if !BBCstop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		//if !BBCstop {
+		e.Request.Visit(e.Attr("href"))
+		//}
 
 	})
 
@@ -89,18 +90,19 @@ func (b *BBCNews) TrackNewsBasedOnCovid19() {
 			b.News = append(b.News, detailsNews)
 		}
 
-		if len(b.News) == 2 {
-			BBCstop = true
-			return
-		}
+		//if len(b.News) == 20 {
+		//	BBCstop = true
+		//	return
+		//}
 		detailsNews = RelatedNews{}
 
 	})
 
-	b.Colly.Limit(&colly.LimitRule{RandomDelay: 1 * time.Second})
+	b.Colly.Limit(&colly.LimitRule{RandomDelay: 20 * time.Second})
 
 	b.Colly.Visit(StartBBCNews)
 	b.Colly.Wait()
+	fmt.Println("total de noticia g1", len(b.News))
 
 }
 func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
@@ -113,7 +115,8 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 	reqBody := external.ReqDocuments{}
 
 	for _, related := range b.News {
-		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+		result := fmt.Sprintf("%s %s",related.Body,related.Title)
+		reqBody.Text = append(reqBody.Text, result)
 	}
 
 
@@ -123,6 +126,7 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 	}
 
 	var docs external.RespDocuments
+	defer req.Body.Close()
 
 	err = json.NewDecoder(req.Body).Decode(&docs)
 	if err != nil {
@@ -138,6 +142,9 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     BBC,
 		}).Info()
+		if index == 20{
+			break
+		}
 
 	}
 	return nil
@@ -145,7 +152,7 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 
 //NewFatoOuFake return crawler  instance of colly
 func NewBBCNews() Crawler {
-	return &G1{
+	return &BBCNews{
 		Colly: colly.NewCollector(colly.AllowedDomains(BBC), colly.URLFilters(
 			regexp.MustCompile(FilterBBC),
 		)),

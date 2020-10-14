@@ -3,11 +3,13 @@ package crawler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
 	"github.com/tc-teams/fakefinder-crawler/api"
 	ctx "github.com/tc-teams/fakefinder-crawler/context/validator"
 	"github.com/tc-teams/fakefinder-crawler/external"
+	"io/ioutil"
 	"regexp"
 	"strings"
 	"time"
@@ -30,9 +32,9 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 
 	//#content .cat-items .tile-list-1 .tileItem
 	g.Colly.OnHTML(".category-listnoticias a[href] ", func(e *colly.HTMLElement) {
-		if !Govstop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		//if !Govstop {
+		e.Request.Visit(e.Attr("href"))
+		//}
 
 	})
 
@@ -74,10 +76,10 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 			g.News = append(g.News, detailsNews)
 		}
 
-		if len(g.News) == 2 {
-			Govstop = true
-			return
-		}
+		//if len(g.News) == 6 {
+		//	Govstop = true
+		//	return
+		//}
 		detailsNews = RelatedNews{}
 
 	})
@@ -86,19 +88,23 @@ func (g *GOV) TrackNewsBasedOnCovid19() {
 
 	g.Colly.Visit(StartGV)
 	g.Colly.Wait()
+	fmt.Println("total de noticia gov", len(g.News))
+
 
 }
 func (g *GOV) LoggingDocuments(log *api.Logging) error {
 
-	if g.News == nil {
+	if len(g.News) == 0 {
 		return errors.New("error to search data in GOV")
 
 	}
 	reqBody := external.ReqDocuments{}
 
 	for _, related := range g.News {
-		reqBody.Text = append(reqBody.Text, related.Body + related.Title)
+		result := fmt.Sprintf("%s %s",related.Body,related.Title)
+		reqBody.Text = append(reqBody.Text, result)
 	}
+	fmt.Println("req:",reqBody)
 
 
 	req, err := external.NewClient().Request(reqBody)
@@ -107,6 +113,11 @@ func (g *GOV) LoggingDocuments(log *api.Logging) error {
 	}
 
 	var docs external.RespDocuments
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println(string(body))
 
 	err = json.NewDecoder(req.Body).Decode(&docs)
 	if err != nil {
