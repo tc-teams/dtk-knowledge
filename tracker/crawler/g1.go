@@ -30,9 +30,7 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
 	g.Colly.OnHTML("#bstn-launcher a[href]", func(e *colly.HTMLElement) {
-		if !G1stop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		e.Request.Visit(e.Attr("href"))
 
 	})
 
@@ -92,15 +90,11 @@ func (g *G1) TrackNewsBasedOnCovid19() {
 			g.News = append(g.News, detailsNews)
 		}
 
-		if len(g.News) == 20 {
-			G1stop = true
-			return
-		}
 		detailsNews = RelatedNews{}
 
 	})
 
-	g.Colly.Limit(&colly.LimitRule{RandomDelay: 1 * time.Second})
+	g.Colly.Limit(&colly.LimitRule{RandomDelay: 22* time.Second})
 
 	g.Colly.Visit(StartG1)
 	g.Colly.Wait()
@@ -143,9 +137,7 @@ func (g *G1) LoggingDocuments(log *api.Logging) error {
 				"Body":     docs.Text[index],
 				"From":     GB,
 			}).Info()
-			if index == 20{
-				break
-			}
+			
 		}
 
 	return nil
