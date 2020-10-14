@@ -30,9 +30,7 @@ func (f *FatoOuFake) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
 	f.Colly.OnHTML(".feed-root a[href]", func(e *colly.HTMLElement) {
-		if !FFstop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		e.Request.Visit(e.Attr("href"))
 
 	})
 
@@ -92,15 +90,11 @@ func (f *FatoOuFake) TrackNewsBasedOnCovid19() {
 			f.News = append(f.News, detailsNews)
 		}
 
-		if len(f.News) == 20 {
-			FFstop = true
-			return
-		}
 		detailsNews = RelatedNews{}
 
 	})
 
-	f.Colly.Limit(&colly.LimitRule{RandomDelay: 1 * time.Second})
+	f.Colly.Limit(&colly.LimitRule{RandomDelay: 22* time.Second})
 
 	f.Colly.Visit(StartFatoOuFake)
 	f.Colly.Wait()
@@ -143,9 +137,7 @@ func (f *FatoOuFake) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     GB,
 		}).Info()
-		if index == 20{
-			break
-		}
+		
 
 	}
 	return nil
