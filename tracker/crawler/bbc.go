@@ -30,9 +30,7 @@ func (b *BBCNews) TrackNewsBasedOnCovid19() {
 	detailsNews := RelatedNews{}
 
 	b.Colly.OnHTML(".lx-stream a[href]", func(e *colly.HTMLElement) {
-		if !BBCstop {
-			e.Request.Visit(e.Attr("href"))
-		}
+		e.Request.Visit(e.Attr("href"))	
 
 	})
 
@@ -90,15 +88,11 @@ func (b *BBCNews) TrackNewsBasedOnCovid19() {
 			b.News = append(b.News, detailsNews)
 		}
 
-		if len(b.News) == 20 {
-			BBCstop = true
-			return
-		}
 		detailsNews = RelatedNews{}
 
 	})
 
-	b.Colly.Limit(&colly.LimitRule{RandomDelay: 1 * time.Second})
+	b.Colly.Limit(&colly.LimitRule{RandomDelay: 22*time.Second})
 
 	b.Colly.Visit(StartBBCNews)
 	b.Colly.Wait()
@@ -141,10 +135,7 @@ func (b *BBCNews) LoggingDocuments(log *api.Logging) error {
 			"Body":     docs.Text[index],
 			"From":     BBC,
 		}).Info()
-		if index == 20{
-			break
-		}
-
+		
 	}
 	return nil
 }
